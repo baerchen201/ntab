@@ -71,7 +71,19 @@ function createWidget(type: WidgetTypes, options?: WidgetOptions): Widget {
       })();
       break;
     case WidgetTypes.Date:
-      console.log("Date widget initialized");
+      (function _() {
+        let now = new Date();
+        switch (widget.options["format"]) {
+          case "reverse":
+            widget.innerText = now.toLocaleDateString("us");
+            break;
+
+          default:
+            widget.innerText = now.toLocaleDateString("de");
+            break;
+        }
+        setTimeout(_, 500);
+      })();
       break;
 
     default:
