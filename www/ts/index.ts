@@ -1,9 +1,3 @@
-window.addEventListener("load", () => {
-  document.body.addEventListener("click", () => {
-    location.reload();
-  });
-});
-
 interface JSONWidget {
   type: number;
   options: { [key: string]: string };
@@ -83,27 +77,6 @@ function insertWidget(widget: JSONWidget, offset?: number): JSONWidget[] {
   else widgets.splice(offset, 0, widget);
   return _overwriteStoredWidgets(widgets);
 }
-
-/**
- * @deprecated Use `new Widget(<type>, <options>).toJSON()` instead
- * Create a Widget Object for use with `addWidget`
- * @param type The type of widget to create (see `WidgetTypes`)
- * @param options The init options of the widget
- * @returns The created widget
- */
-function createJSONWidget(
-  type: number,
-  options: { [key: string]: string } = {}
-): JSONWidget {
-  return { type: type, options: options };
-}
-
-_overwriteStoredWidgets([]); // Clear stored widget memory
-//! Deprecated
-insertWidget(createJSONWidget(2)); // Create DateWidget object
-insertWidget(createJSONWidget(1)); // Create TimeWidget object
-insertWidget(createJSONWidget(1, { "12h": "true" })); // Create TimeWidget object with options
-console.log(getStoredWidgets()); // Print saved objects
 
 _overwriteStoredWidgets([]); // Clear stored widget memory
 insertWidget(new Widget(2).toJSON()); // Create DateWidget object
