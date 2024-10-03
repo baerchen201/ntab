@@ -9,14 +9,14 @@ body {
     Oxygen, Ubuntu, Cantarell, "Open Sans", Consolas, "Ubuntu Mono", monospace;
 }
 
-ntab-widget {
+widget-generic {
   font-size: 60px;
   font-family: Consolas, "Ubuntu Mono", monospace; /*! Placeholder / Test code */
 }
 
-ntab-widget.t1 {
+widget-generic.widget-1 {
   color: #f00;
 }
-ntab-widget.t2 {
+widget-generic.widget-2 {
   color: #00f;
 }

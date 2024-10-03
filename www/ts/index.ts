@@ -1,9 +1,30 @@
 /**
+ * Merges two or more string-key objects into one
+ * @param objects The objects to merge
+ * @returns The merged result
+ */
+function mergeStringObjects(...objects: { [key: string]: any }[]): {
+  [key: string]: any;
+} {
+  let out: { [key: string]: any } = {};
+  objects.forEach((object: { [key: string]: any }) => {
+    Object.keys(object).forEach((key: string) => {
+      out[key] = object[key];
+    });
+  });
+  return out;
+}
+
+interface WidgetOptions {
+  [key: string]: string | number | boolean | null;
+}
+
+/**
  * Base JSON Widget, used in memory
  */
 interface JSONWidget {
   type: number;
-  options: { [key: string]: string };
+  options: WidgetOptions;
 }
 
 /**
@@ -13,17 +34,20 @@ class Widget extends HTMLElement {
   /** The type of widget */
   type: number;
   /** The widget options */
-  options: { [key: string]: string };
+  options: WidgetOptions = {};
 
-  constructor(type: number, options: { [key: string]: string } = {}) {
+  static defaults: WidgetOptions = {};
+
+  constructor(type: number, options: WidgetOptions = {}) {
     super();
 
     this.type = type;
-    this.classList.add("t" + type.toString());
-    this.options = options;
+    this.classList.add("widget-" + this.type.toString());
+    // @ts-ignore
+    this.options = mergeStringObjects(this.constructor.defaults, options);
 
     //! Placeholder / Test code
-    this.innerHTML = JSON.stringify(this.toJSON());
+    this.innerText = JSON.stringify(this.toJSON());
   }
 
   static fromJSON(json: JSONWidget): Widget {
@@ -34,8 +58,32 @@ class Widget extends HTMLElement {
     return { type: this.type, options: this.options };
   }
 }
+window.customElements.define("widget-generic", Widget);
 
-window.customElements.define("ntab-widget", Widget);
+class TimeWidget extends Widget {
+  static defaults = {
+    "12h": false,
+    test_option: null,
+  };
+  constructor(options: { "12h"?: boolean; test_option?: null } = {}) {
+    super(1, options);
+  }
+}
+window.customElements.define("widget-time", TimeWidget);
+
+class DateWidget extends Widget {
+  static defaults = {
+    format: "normal",
+  };
+  constructor(
+    options: {
+      format?: "normal" | "reverse"; // TODO: Replace with proper formatting (%d, %m, %y, etc.)
+    } = {}
+  ) {
+    super(2, options);
+  }
+}
+window.customElements.define("widget-date", DateWidget);
 
 /**
  * Read widget list from memory as `JSONWidget[]`
@@ -91,11 +139,12 @@ function insertWidget(widget: JSONWidget, offset?: number): JSONWidget[] {
 }
 
 _overwriteStoredWidgets([]); // Clear stored widget memory
-insertWidget(new Widget(2).toJSON()); // Create DateWidget object
-insertWidget(new Widget(1).toJSON()); // Create TimeWidget object
-insertWidget(new Widget(1, { "12h": "true" }).toJSON()); // Create TimeWidget object with options
-console.log(getStoredWidgets()); // Print saved objects
+insertWidget(new DateWidget().toJSON()); // Create DateWidget object
+insertWidget(new TimeWidget().toJSON()); // Create TimeWidget object
+insertWidget(new TimeWidget({ "12h": true }).toJSON()); // Create TimeWidget object with options
 
 getStoredWidgets()!.forEach((json: JSONWidget) => {
-  document.body.appendChild(Widget.fromJSON(json));
+  let widget: Widget = Widget.fromJSON(json); // Convert stored JSON Object to Widget
+  document.body.appendChild(widget); // Show saved objects on page
+  console.log("Widget", widget, "\n Type", widget.type, "\n", widget.options); // Print saved objects
 });
