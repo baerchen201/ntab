@@ -1,20 +1,3 @@
-/**
- * Merges two or more string-key objects into one
- * @param objects The objects to merge
- * @returns The merged result
- */
-function mergeStringObjects(...objects: { [key: string]: any }[]): {
-  [key: string]: any;
-} {
-  let out: { [key: string]: any } = {};
-  objects.forEach((object: { [key: string]: any }) => {
-    Object.keys(object).forEach((key: string) => {
-      out[key] = object[key];
-    });
-  });
-  return out;
-}
-
 interface WidgetOptions {
   [key: string]: string | number | boolean | null;
 }
@@ -26,20 +9,6 @@ interface JSONWidget {
   type: number;
   options: WidgetOptions;
 }
-
-/**
- * @deprecated
- */
-const widgetTypeRegistry = new (class {
-  readonly types: { [key: number]: typeof Widget };
-  constructor() {
-    this.types = [];
-  }
-  add(_class: typeof Widget | any, name: string) {
-    window.customElements.define(`widget-${name}`, _class);
-    this.types[_class.defaultType] = _class;
-  }
-})();
 
 /**
  * Base Widget class
@@ -69,7 +38,7 @@ class Widget extends HTMLElement {
     return { type: this.type, options: this.options };
   }
 }
-widgetTypeRegistry.add(Widget, "generic");
+window.customElements.define("widget-generic", Widget);
 
 enum WidgetTypes {
   Generic,
@@ -80,7 +49,7 @@ enum WidgetTypes {
 function createWidget(type: WidgetTypes.Generic, options?: {}): Widget;
 function createWidget(
   type: WidgetTypes.Time,
-  options?: { "12h"?: boolean; test_option?: null }
+  options?: { "12h"?: boolean }
 ): Widget;
 function createWidget(
   type: WidgetTypes.Date,
@@ -106,42 +75,6 @@ function createWidget(type: WidgetTypes, options?: WidgetOptions): Widget {
 
   return widget;
 }
-
-/**
- * @deprecated use `createWidget(WidgetTypes.Time, <options>)` instead
- */
-class TimeWidget extends Widget {
-  static defaultType = 1;
-  static defaults = {
-    "12h": false,
-    test_option: null,
-  };
-  constructor(
-    options: { "12h"?: boolean; test_option?: null } = {},
-    ..._: any
-  ) {
-    super(TimeWidget.defaultType, options);
-  }
-}
-widgetTypeRegistry.add(TimeWidget, "time");
-/**
- * @deprecated use `createWidget(WidgetTypes.Date, <options>)` instead
- */
-class DateWidget extends Widget {
-  static defaultType = 2;
-  static defaults = {
-    format: "normal",
-  };
-  constructor(
-    options: {
-      format?: "normal" | "reverse";
-    } = {},
-    ..._: any
-  ) {
-    super(DateWidget.defaultType, options);
-  }
-}
-widgetTypeRegistry.add(DateWidget, "date");
 
 /**
  * Read widget list from memory as `JSONWidget[]`
