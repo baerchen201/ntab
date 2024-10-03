@@ -12,6 +12,8 @@ body {
 widget-generic {
   font-size: 60px;
   font-family: Consolas, "Ubuntu Mono", monospace; /*! Placeholder / Test code */
+
+  user-select: none;
 }
 
 widget-generic.widget-1 {
