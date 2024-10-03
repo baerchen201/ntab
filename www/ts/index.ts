@@ -27,6 +27,17 @@ interface JSONWidget {
   options: WidgetOptions;
 }
 
+const widgetTypeRegistry = new (class {
+  readonly types: { [key: number]: typeof Widget };
+  constructor() {
+    this.types = [];
+  }
+  add(_class: typeof Widget | any, name: string) {
+    window.customElements.define(`widget-${name}`, _class);
+    this.types[_class.defaultType] = _class;
+  }
+})();
+
 /**
  * Base Widget class
  */
@@ -36,9 +47,10 @@ class Widget extends HTMLElement {
   /** The widget options */
   options: WidgetOptions = {};
 
+  static defaultType: number = 0;
   static defaults: WidgetOptions = {};
 
-  constructor(type: number, options: WidgetOptions = {}) {
+  constructor(options: WidgetOptions = {}, type: number) {
     super();
 
     this.type = type;
@@ -51,39 +63,45 @@ class Widget extends HTMLElement {
   }
 
   static fromJSON(json: JSONWidget): Widget {
-    return new Widget(json.type, json.options);
+    return new widgetTypeRegistry.types[json.type](json.options, json.type);
   }
 
   toJSON(): JSONWidget {
     return { type: this.type, options: this.options };
   }
 }
-window.customElements.define("widget-generic", Widget);
+widgetTypeRegistry.add(Widget, "generic");
 
 class TimeWidget extends Widget {
+  static defaultType = 1;
   static defaults = {
     "12h": false,
     test_option: null,
   };
-  constructor(options: { "12h"?: boolean; test_option?: null } = {}) {
-    super(1, options);
+  constructor(
+    options: { "12h"?: boolean; test_option?: null } = {},
+    ..._: any
+  ) {
+    super(options, TimeWidget.defaultType);
   }
 }
-window.customElements.define("widget-time", TimeWidget);
+widgetTypeRegistry.add(TimeWidget, "time");
 
 class DateWidget extends Widget {
+  static defaultType = 2;
   static defaults = {
     format: "normal",
   };
   constructor(
     options: {
       format?: "normal" | "reverse"; // TODO: Replace with proper formatting (%d, %m, %y, etc.)
-    } = {}
+    } = {},
+    ..._: any
   ) {
-    super(2, options);
+    super(options, DateWidget.defaultType);
   }
 }
-window.customElements.define("widget-date", DateWidget);
+widgetTypeRegistry.add(DateWidget, "date");
 
 /**
  * Read widget list from memory as `JSONWidget[]`
