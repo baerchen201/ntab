@@ -62,7 +62,13 @@ function createWidget(type: WidgetTypes, options?: WidgetOptions): Widget {
 
   switch (type) {
     case WidgetTypes.Time:
-      console.log("Time widget initialized");
+      (function _() {
+        let now = new Date();
+        widget.innerText = now.toLocaleTimeString(
+          widget.options["12h"] ? "us" : "de"
+        );
+        setTimeout(_, 500);
+      })();
       break;
     case WidgetTypes.Date:
       console.log("Date widget initialized");
