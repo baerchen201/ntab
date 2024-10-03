@@ -82,7 +82,7 @@ function createWidget(type: WidgetTypes, options?: WidgetOptions): Widget {
             widget.innerText = now.toLocaleDateString("de");
             break;
         }
-        setTimeout(_, 500);
+        setTimeout(_, 5000);
       })();
       break;
 
@@ -101,6 +101,7 @@ function createWidget(type: WidgetTypes, options?: WidgetOptions): Widget {
  */
 function getStoredWidgets(): JSONWidget[] | null {
   let json: string | null = localStorage.getItem("widgets");
+  if (!json) _overwriteStoredWidgets([]);
   try {
     return JSON.parse(json == null ? "[]" : json);
   } catch (e) {
@@ -147,16 +148,43 @@ function insertWidget(widget: JSONWidget, offset?: number): JSONWidget[] {
   return _overwriteStoredWidgets(widgets);
 }
 
-_overwriteStoredWidgets([]); // Clear stored widget memory
-insertWidget(
-  createWidget(WidgetTypes.Generic, { text: "Hello, World!" }).toJSON()
-); // Create generic widget
-insertWidget(createWidget(WidgetTypes.Date).toJSON()); // Create date widget
-insertWidget(createWidget(WidgetTypes.Time).toJSON()); // Create time widget
-insertWidget(createWidget(WidgetTypes.Time, { "12h": true }).toJSON()); // Create time widget in 12h mode
+function displayWidget(widget: Widget) {
+  document.body.appendChild(widget);
+  console.log("Widget", widget, "\n Type", widget.type, "\n", widget.options);
+}
 
+let widgets = [];
 getStoredWidgets()!.forEach((json: JSONWidget) => {
-  let widget: Widget = Widget.fromJSON(json); // Convert stored JSON Object to Widget
-  document.body.appendChild(widget); // Show saved objects on page
-  console.log("Widget", widget, "\n Type", widget.type, "\n", widget.options); // Print saved objects
+  displayWidget(Widget.fromJSON(json));
+});
+
+window.addEventListener("load", () => {
+  document.getElementById("add12h")!.addEventListener("click", () => {
+    let widget = createWidget(WidgetTypes.Time, { "12h": true });
+    insertWidget(widget.toJSON());
+    displayWidget(widget);
+  });
+  document.getElementById("add24h")!.addEventListener("click", () => {
+    let widget = createWidget(WidgetTypes.Time);
+    insertWidget(widget.toJSON());
+    displayWidget(widget);
+  });
+  document.getElementById("addde")!.addEventListener("click", () => {
+    let widget = createWidget(WidgetTypes.Date);
+    insertWidget(widget.toJSON());
+    displayWidget(widget);
+  });
+  document.getElementById("addus")!.addEventListener("click", () => {
+    let widget = createWidget(WidgetTypes.Date, { format: "reverse" });
+    insertWidget(widget.toJSON());
+    displayWidget(widget);
+  });
+  document.getElementById("remove")!.addEventListener("click", () => {
+    removeStoredWidget(-1);
+    location.reload();
+  });
+  document.getElementById("clear")!.addEventListener("click", () => {
+    _overwriteStoredWidgets([]);
+    location.reload();
+  });
 });

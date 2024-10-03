@@ -22,3 +22,14 @@ widget-generic.widget-1 {
 widget-generic.widget-2 {
   color: #00f;
 }
+
+#control {
+  display: flex;
+  position: absolute;
+  bottom: 0;
+  gap: 10px;
+}
+#control > button {
+  font-size: x-large;
+  padding: 8px;
+}
