@@ -27,6 +27,9 @@ interface JSONWidget {
   options: WidgetOptions;
 }
 
+/**
+ * @deprecated
+ */
 const widgetTypeRegistry = new (class {
   readonly types: { [key: number]: typeof Widget };
   constructor() {
@@ -47,23 +50,19 @@ class Widget extends HTMLElement {
   /** The widget options */
   options: WidgetOptions = {};
 
-  static defaultType: number = 0;
-  static defaults: WidgetOptions = {};
-
-  constructor(options: WidgetOptions = {}, type: number) {
+  constructor(type: number, options: WidgetOptions = {}) {
     super();
 
     this.type = type;
     this.classList.add("widget-" + this.type.toString());
-    // @ts-ignore
-    this.options = mergeStringObjects(this.constructor.defaults, options);
+    this.options = options;
 
     //! Placeholder / Test code
     this.innerText = JSON.stringify(this.toJSON());
   }
 
   static fromJSON(json: JSONWidget): Widget {
-    return new widgetTypeRegistry.types[json.type](json.options, json.type);
+    return createWidget(json.type, json.options);
   }
 
   toJSON(): JSONWidget {
@@ -72,6 +71,45 @@ class Widget extends HTMLElement {
 }
 widgetTypeRegistry.add(Widget, "generic");
 
+enum WidgetTypes {
+  Generic,
+  Time,
+  Date,
+}
+
+function createWidget(type: WidgetTypes.Generic, options?: {}): Widget;
+function createWidget(
+  type: WidgetTypes.Time,
+  options?: { "12h"?: boolean; test_option?: null }
+): Widget;
+function createWidget(
+  type: WidgetTypes.Date,
+  options?: {
+    format?: "normal" | "reverse"; // TODO: Replace with proper formatting (%d, %m, %y, etc.)
+  }
+): Widget;
+function createWidget(type: WidgetTypes, options?: WidgetOptions): Widget {
+  let widget: Widget = new Widget(type, options ? options : {});
+
+  switch (type) {
+    case WidgetTypes.Time:
+      console.log("Time widget initialized");
+      break;
+    case WidgetTypes.Date:
+      console.log("Date widget initialized");
+      break;
+
+    default:
+      console.warn("Generic widget initialized");
+      break;
+  }
+
+  return widget;
+}
+
+/**
+ * @deprecated use `createWidget(WidgetTypes.Time, <options>)` instead
+ */
 class TimeWidget extends Widget {
   static defaultType = 1;
   static defaults = {
@@ -82,11 +120,13 @@ class TimeWidget extends Widget {
     options: { "12h"?: boolean; test_option?: null } = {},
     ..._: any
   ) {
-    super(options, TimeWidget.defaultType);
+    super(TimeWidget.defaultType, options);
   }
 }
 widgetTypeRegistry.add(TimeWidget, "time");
-
+/**
+ * @deprecated use `createWidget(WidgetTypes.Date, <options>)` instead
+ */
 class DateWidget extends Widget {
   static defaultType = 2;
   static defaults = {
@@ -94,11 +134,11 @@ class DateWidget extends Widget {
   };
   constructor(
     options: {
-      format?: "normal" | "reverse"; // TODO: Replace with proper formatting (%d, %m, %y, etc.)
+      format?: "normal" | "reverse";
     } = {},
     ..._: any
   ) {
-    super(options, DateWidget.defaultType);
+    super(DateWidget.defaultType, options);
   }
 }
 widgetTypeRegistry.add(DateWidget, "date");
@@ -157,9 +197,12 @@ function insertWidget(widget: JSONWidget, offset?: number): JSONWidget[] {
 }
 
 _overwriteStoredWidgets([]); // Clear stored widget memory
-insertWidget(new DateWidget().toJSON()); // Create DateWidget object
-insertWidget(new TimeWidget().toJSON()); // Create TimeWidget object
-insertWidget(new TimeWidget({ "12h": true }).toJSON()); // Create TimeWidget object with options
+insertWidget(
+  createWidget(WidgetTypes.Generic, { text: "Hello, World!" }).toJSON()
+); // Create generic widget
+insertWidget(createWidget(WidgetTypes.Date).toJSON()); // Create date widget
+insertWidget(createWidget(WidgetTypes.Time).toJSON()); // Create time widget
+insertWidget(createWidget(WidgetTypes.Time, { "12h": true }).toJSON()); // Create time widget in 12h mode
 
 getStoredWidgets()!.forEach((json: JSONWidget) => {
   let widget: Widget = Widget.fromJSON(json); // Convert stored JSON Object to Widget
