@@ -1,17 +1,29 @@
+/**
+ * Base JSON Widget, used in memory
+ */
 interface JSONWidget {
   type: number;
   options: { [key: string]: string };
 }
 
+/**
+ * Base Widget class
+ */
 class Widget extends HTMLElement {
+  /** The type of widget */
   type: number;
+  /** The widget options */
   options: { [key: string]: string };
 
   constructor(type: number, options: { [key: string]: string } = {}) {
     super();
 
     this.type = type;
+    this.classList.add("t" + type.toString());
     this.options = options;
+
+    //! Placeholder / Test code
+    this.innerHTML = JSON.stringify(this.toJSON());
   }
 
   static fromJSON(json: JSONWidget): Widget {
@@ -85,6 +97,5 @@ insertWidget(new Widget(1, { "12h": "true" }).toJSON()); // Create TimeWidget ob
 console.log(getStoredWidgets()); // Print saved objects
 
 getStoredWidgets()!.forEach((json: JSONWidget) => {
-  let widget = Widget.fromJSON(json);
-  document.body.appendChild(widget);
+  document.body.appendChild(Widget.fromJSON(json));
 });
