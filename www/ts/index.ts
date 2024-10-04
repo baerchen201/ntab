@@ -162,12 +162,12 @@ window.addEventListener("load", () => {
   document.getElementById("add12h")!.addEventListener("click", () => {
     let widget = createWidget(WidgetTypes.Time, { "12h": true });
     insertWidget(widget.toJSON());
-    displayWidget(widget);
+    location.reload();
   });
   document.getElementById("add24h")!.addEventListener("click", () => {
     let widget = createWidget(WidgetTypes.Time);
     insertWidget(widget.toJSON());
-    displayWidget(widget);
+    location.reload();
   });
   document.getElementById("addde")!.addEventListener("click", () => {
     let widget = createWidget(WidgetTypes.Date);
