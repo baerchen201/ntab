@@ -46,6 +46,34 @@ enum WidgetTypes {
   Date,
 }
 
+const timeWidgets: Widget[] = [];
+function _updateTimeWidgets() {
+  let now = new Date();
+  timeWidgets.forEach((widget) => {
+    widget.innerText = now.toLocaleTimeString(
+      widget.options["12h"] ? "us" : "de"
+    );
+  });
+}
+setInterval(_updateTimeWidgets, 200);
+
+const dateWidgets: Widget[] = [];
+function _updateDateWidgets() {
+  let now = new Date();
+  dateWidgets.forEach((widget) => {
+    switch (widget.options["format"]) {
+      case "reverse":
+        widget.innerText = now.toLocaleDateString("us");
+        break;
+
+      default:
+        widget.innerText = now.toLocaleDateString("de");
+        break;
+    }
+  });
+}
+setInterval(_updateDateWidgets, 500);
+
 function createWidget(type: WidgetTypes.Generic, options?: {}): Widget;
 function createWidget(
   type: WidgetTypes.Time,
@@ -62,28 +90,10 @@ function createWidget(type: WidgetTypes, options?: WidgetOptions): Widget {
 
   switch (type) {
     case WidgetTypes.Time:
-      (function _() {
-        let now = new Date();
-        widget.innerText = now.toLocaleTimeString(
-          widget.options["12h"] ? "us" : "de"
-        );
-        setTimeout(_, 500);
-      })();
+      timeWidgets.push(widget);
       break;
     case WidgetTypes.Date:
-      (function _() {
-        let now = new Date();
-        switch (widget.options["format"]) {
-          case "reverse":
-            widget.innerText = now.toLocaleDateString("us");
-            break;
-
-          default:
-            widget.innerText = now.toLocaleDateString("de");
-            break;
-        }
-        setTimeout(_, 5000);
-      })();
+      dateWidgets.push(widget);
       break;
 
     default:
@@ -157,27 +167,33 @@ let widgets = [];
 getStoredWidgets()!.forEach((json: JSONWidget) => {
   displayWidget(Widget.fromJSON(json));
 });
+_updateTimeWidgets();
+_updateDateWidgets();
 
 window.addEventListener("load", () => {
   document.getElementById("add12h")!.addEventListener("click", () => {
     let widget = createWidget(WidgetTypes.Time, { "12h": true });
     insertWidget(widget.toJSON());
-    location.reload();
+    displayWidget(widget);
+    _updateTimeWidgets();
   });
   document.getElementById("add24h")!.addEventListener("click", () => {
     let widget = createWidget(WidgetTypes.Time);
     insertWidget(widget.toJSON());
-    location.reload();
+    displayWidget(widget);
+    _updateTimeWidgets();
   });
   document.getElementById("addde")!.addEventListener("click", () => {
     let widget = createWidget(WidgetTypes.Date);
     insertWidget(widget.toJSON());
     displayWidget(widget);
+    _updateDateWidgets();
   });
   document.getElementById("addus")!.addEventListener("click", () => {
     let widget = createWidget(WidgetTypes.Date, { format: "reverse" });
     insertWidget(widget.toJSON());
     displayWidget(widget);
+    _updateDateWidgets();
   });
   document.getElementById("remove")!.addEventListener("click", () => {
     removeStoredWidget(-1);
