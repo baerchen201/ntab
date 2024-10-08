@@ -32,7 +32,12 @@ widget-generic.widget-3 {
   bottom: 0;
   gap: 10px;
 }
-#control > button {
+#control > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+#control button {
   font-size: x-large;
   padding: 8px;
 }
