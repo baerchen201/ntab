@@ -38,7 +38,8 @@ widget-generic.widget-3 {
   gap: 5px;
   justify-content: center;
 }
-#control button {
+#control button,
+#control select {
   font-size: x-large;
   padding: 8px;
 }

@@ -100,7 +100,7 @@ function _updateSystemInfoWidgets() {
     widget.innerText = out.join(", ");
   });
 }
-setInterval(_updateSystemInfo, 600000);
+setInterval(_updateSystemInfo, 6e5);
 
 function _updateAll(init: boolean = false) {
   _updateTimeWidgets();
@@ -240,6 +240,18 @@ window.addEventListener("load", () => {
     insertWidget(widget.toJSON());
     displayWidget(widget);
     _updateDateWidgets();
+  });
+  document.getElementById("addip")!.addEventListener("click", () => {
+    let conf = document.getElementById("addip-conf") as HTMLSelectElement;
+    let options = Number(conf.value);
+    let widget = createWidget(WidgetTypes.Ip, {
+      city: options & 0b100,
+      region: options & 0b010,
+      country: options & 0b001,
+    });
+    insertWidget(widget.toJSON());
+    displayWidget(widget);
+    _updateSystemInfoWidgets();
   });
   document.getElementById("remove")!.addEventListener("click", () => {
     removeStoredWidget(-1);

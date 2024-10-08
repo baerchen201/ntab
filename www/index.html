@@ -18,6 +18,19 @@
         <button id="addde">Add dd.mm.yyyy date display</button>
         <button id="addus">Add mm/dd/yyyy date display</button>
       </div>
+      <div>
+        <select name="addip-conf" id="addip-conf">
+          <option value="0b000" selected>None</option>
+          <option value="0b001">Country</option>
+          <option value="0b010">Region</option>
+          <option value="0b011">Region, Country</option>
+          <option value="0b100">City</option>
+          <option value="0b101">City, Country</option>
+          <option value="0b110">City, Region</option>
+          <option value="0b111">City, Region, Country</option>
+        </select>
+        <button id="addip">Add IP info</button>
+      </div>
       <button id="remove">Remove last widget</button>
       <button id="clear">Remove all widgets</button>
     </div>
