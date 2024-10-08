@@ -85,7 +85,8 @@ function createWidget(
     format?: "normal" | "reverse"; // TODO: Replace with proper formatting (%d, %m, %y, etc.)
   }
 ): Widget;
-function createWidget(type: WidgetTypes, options?: WidgetOptions): Widget {
+function createWidget(type: WidgetTypes, options?: WidgetOptions): Widget;
+function createWidget(type: number, options?: {}): Widget {
   let widget: Widget = new Widget(type, options ? options : {});
 
   switch (type) {
@@ -204,3 +205,14 @@ window.addEventListener("load", () => {
     location.reload();
   });
 });
+
+function newWidget(
+  type: WidgetTypes,
+  options?: WidgetOptions,
+  insert_pos?: number
+): Widget {
+  let widget = createWidget(type, options);
+  insertWidget(widget, insert_pos);
+  displayWidget(widget);
+  return widget;
+}
