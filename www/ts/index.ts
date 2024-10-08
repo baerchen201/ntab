@@ -52,7 +52,7 @@ function _updateTimeWidgets() {
   let now = new Date();
   timeWidgets.forEach((widget) => {
     widget.innerText = now.toLocaleTimeString(
-      widget.options["12h"] ? "us" : "de"
+      widget.options["format"] as string
     );
   });
 }
@@ -62,15 +62,9 @@ const dateWidgets: Widget[] = [];
 function _updateDateWidgets() {
   let now = new Date();
   dateWidgets.forEach((widget) => {
-    switch (widget.options["format"]) {
-      case "reverse":
-        widget.innerText = now.toLocaleDateString("us");
-        break;
-
-      default:
-        widget.innerText = now.toLocaleDateString("de");
-        break;
-    }
+    widget.innerText = now.toLocaleDateString(
+      widget.options["format"] as string
+    );
   });
 }
 setInterval(_updateDateWidgets, 500);
@@ -113,12 +107,12 @@ const _widgets: Widget[] = [];
 function createWidget(type: WidgetTypes.Generic, options?: {}): Widget;
 function createWidget(
   type: WidgetTypes.Time,
-  options?: { "12h"?: boolean }
+  options?: { format?: string }
 ): Widget;
 function createWidget(
   type: WidgetTypes.Date,
   options?: {
-    format?: "normal" | "reverse"; // TODO: Replace with proper formatting (%d, %m, %y, etc.)
+    format?: string;
   }
 ): Widget;
 function createWidget(
@@ -242,7 +236,7 @@ window.addEventListener("load", () => {
   document.getElementById("addtime")!.addEventListener("click", () => {
     let conf = document.getElementById("addtime-conf") as HTMLSelectElement;
     let widget = createWidget(WidgetTypes.Time, {
-      "12h": conf.value == "us",
+      format: conf.value,
     });
     insertWidget(widget.toJSON());
     displayWidget(widget);
