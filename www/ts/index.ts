@@ -109,6 +109,7 @@ function _updateAll(init: boolean = false) {
   if (init) _updateSystemInfo();
 }
 
+const _widgets: Widget[] = [];
 function createWidget(type: WidgetTypes.Generic, options?: {}): Widget;
 function createWidget(
   type: WidgetTypes.Time,
@@ -131,7 +132,7 @@ function createWidget(
 function createWidget(type: WidgetTypes, options?: WidgetOptions): Widget;
 function createWidget(type: number, options?: {}): Widget {
   let widget: Widget = new Widget(type, options ? options : {});
-
+  _widgets.push(widget);
   switch (type) {
     case WidgetTypes.Time:
       timeWidgets.push(widget);
@@ -149,6 +150,27 @@ function createWidget(type: number, options?: {}): Widget {
   }
 
   return widget;
+}
+function removeWidget(widget?: Widget): void {
+  if (!widget) widget = _widgets[_widgets.length - 1];
+  widget.remove();
+  _widgets.splice(_widgets.indexOf(widget), 1);
+  switch (widget.type) {
+    case WidgetTypes.Time:
+      timeWidgets.splice(timeWidgets.indexOf(widget), 1);
+      break;
+    case WidgetTypes.Date:
+      dateWidgets.splice(dateWidgets.indexOf(widget), 1);
+      break;
+    case WidgetTypes.Ip:
+      ipWidgets.splice(dateWidgets.indexOf(widget), 1);
+      break;
+
+    default:
+      console.warn("Generic widget removed");
+      break;
+  }
+  removeStoredWidget(getStoredWidgets()!.indexOf(widget.toJSON()));
 }
 
 /**
@@ -254,8 +276,7 @@ window.addEventListener("load", () => {
     _updateSystemInfoWidgets();
   });
   document.getElementById("remove")!.addEventListener("click", () => {
-    removeStoredWidget(-1);
-    location.reload();
+    removeWidget();
   });
   document.getElementById("clear")!.addEventListener("click", () => {
     _overwriteStoredWidgets([]);
