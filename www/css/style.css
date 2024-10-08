@@ -36,6 +36,7 @@ widget-generic.widget-3 {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  justify-content: center;
 }
 #control button {
   font-size: x-large;
