@@ -44,6 +44,7 @@ enum WidgetTypes {
   Generic,
   Time,
   Date,
+  Ip,
 }
 
 const timeWidgets: Widget[] = [];
@@ -74,6 +75,45 @@ function _updateDateWidgets() {
 }
 setInterval(_updateDateWidgets, 500);
 
+interface ipInfo {
+  ip: string;
+  ip_decimal: number;
+  country: string;
+  country_iso: string;
+  country_eu: boolean;
+  region_name: string;
+  region_code: string;
+  zip_code: string;
+  city: string;
+  latitude: number;
+  longitude: number;
+  time_zone: string;
+  asn: string;
+  asn_org: string;
+  hostname: string;
+  user_agent: {
+    product: string;
+    version: string;
+    comment: string;
+    raw_value: string;
+  };
+}
+const ipWidgets: Widget[] = [];
+function _updateIpWidgets() {
+  fetch("https://ifconfig.co/json", {}).then((response) => {
+    //! TODO: Update to different ip information provider
+    ipWidgets.forEach(async (widget) => {
+      let ip_info: ipInfo = await response.json();
+      let out: string[] = [ip_info.ip];
+      if (widget.options["city"]) out.push(ip_info.city);
+      if (widget.options["region"]) out.push(ip_info.region_name);
+      if (widget.options["country"]) out.push(ip_info.country);
+      widget.innerText = out.join(", ");
+    });
+  });
+}
+setInterval(_updateIpWidgets, 600000);
+
 function createWidget(type: WidgetTypes.Generic, options?: {}): Widget;
 function createWidget(
   type: WidgetTypes.Time,
@@ -83,6 +123,14 @@ function createWidget(
   type: WidgetTypes.Date,
   options?: {
     format?: "normal" | "reverse"; // TODO: Replace with proper formatting (%d, %m, %y, etc.)
+  }
+): Widget;
+function createWidget(
+  type: WidgetTypes.Ip,
+  options?: {
+    city?: boolean;
+    region?: boolean;
+    country?: boolean;
   }
 ): Widget;
 function createWidget(type: WidgetTypes, options?: WidgetOptions): Widget;
@@ -95,6 +143,9 @@ function createWidget(type: number, options?: {}): Widget {
       break;
     case WidgetTypes.Date:
       dateWidgets.push(widget);
+      break;
+    case WidgetTypes.Ip:
+      ipWidgets.push(widget);
       break;
 
     default:
@@ -170,6 +221,7 @@ getStoredWidgets()!.forEach((json: JSONWidget) => {
 });
 _updateTimeWidgets();
 _updateDateWidgets();
+_updateIpWidgets();
 
 window.addEventListener("load", () => {
   document.getElementById("add12h")!.addEventListener("click", () => {
