@@ -11,12 +11,18 @@
 
     <div id="control">
       <div>
-        <button id="add12h">Add 12 hour clock</button>
-        <button id="add24h">Add 24 hour clock</button>
+        <select name="addtime-conf" id="addtime-conf">
+          <option value="de" selected>24h (19:20)</option>
+          <option value="us">12h (7:20 PM)</option>
+        </select>
+        <button id="addtime">Add clock</button>
       </div>
       <div>
-        <button id="addde">Add dd.mm.yyyy date display</button>
-        <button id="addus">Add mm/dd/yyyy date display</button>
+        <select name="adddate-conf" id="adddate-conf">
+          <option value="normal" selected>dd.mm.yyyy</option>
+          <option value="reverse">mm/dd/yyyy</option>
+        </select>
+        <button id="adddate">Add date display</button>
       </div>
       <div>
         <select name="addip-conf" id="addip-conf">

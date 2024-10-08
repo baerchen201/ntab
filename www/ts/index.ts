@@ -239,26 +239,20 @@ getStoredWidgets()!.forEach((json: JSONWidget) => {
 _updateAll(true);
 
 window.addEventListener("load", () => {
-  document.getElementById("add12h")!.addEventListener("click", () => {
-    let widget = createWidget(WidgetTypes.Time, { "12h": true });
+  document.getElementById("addtime")!.addEventListener("click", () => {
+    let conf = document.getElementById("addtime-conf") as HTMLSelectElement;
+    let widget = createWidget(WidgetTypes.Time, {
+      "12h": conf.value == "us",
+    });
     insertWidget(widget.toJSON());
     displayWidget(widget);
     _updateTimeWidgets();
   });
-  document.getElementById("add24h")!.addEventListener("click", () => {
-    let widget = createWidget(WidgetTypes.Time);
-    insertWidget(widget.toJSON());
-    displayWidget(widget);
-    _updateTimeWidgets();
-  });
-  document.getElementById("addde")!.addEventListener("click", () => {
-    let widget = createWidget(WidgetTypes.Date);
-    insertWidget(widget.toJSON());
-    displayWidget(widget);
-    _updateDateWidgets();
-  });
-  document.getElementById("addus")!.addEventListener("click", () => {
-    let widget = createWidget(WidgetTypes.Date, { format: "reverse" });
+  document.getElementById("adddate")!.addEventListener("click", () => {
+    let conf = document.getElementById("adddate-conf") as HTMLSelectElement;
+    let widget = createWidget(WidgetTypes.Date, {
+      format: conf.value,
+    });
     insertWidget(widget.toJSON());
     displayWidget(widget);
     _updateDateWidgets();
