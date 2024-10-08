@@ -75,44 +75,39 @@ function _updateDateWidgets() {
 }
 setInterval(_updateDateWidgets, 500);
 
-interface ipInfo {
-  ip: string;
-  ip_decimal: number;
-  country: string;
-  country_iso: string;
-  country_eu: boolean;
-  region_name: string;
-  region_code: string;
-  zip_code: string;
-  city: string;
-  latitude: number;
-  longitude: number;
-  time_zone: string;
-  asn: string;
-  asn_org: string;
-  hostname: string;
-  user_agent: {
-    product: string;
-    version: string;
-    comment: string;
-    raw_value: string;
-  };
-}
 const ipWidgets: Widget[] = [];
-function _updateIpWidgets() {
-  fetch("https://ifconfig.co/json", {}).then((response) => {
-    //! TODO: Update to different ip information provider
-    ipWidgets.forEach(async (widget) => {
-      let ip_info: ipInfo = await response.json();
-      let out: string[] = [ip_info.ip];
-      if (widget.options["city"]) out.push(ip_info.city);
-      if (widget.options["region"]) out.push(ip_info.region_name);
-      if (widget.options["country"]) out.push(ip_info.country);
-      widget.innerText = out.join(", ");
-    });
+interface SystemInfo {
+  [key: string]: string | number | boolean | null | any;
+}
+let system_info: SystemInfo;
+function _updateSystemInfo() {
+  fetch("https://www.gogeoip.com/json/?user", {}).then(async (response) => {
+    system_info = await response.json();
+    _updateSystemInfoWidgets();
   });
 }
-setInterval(_updateIpWidgets, 600000);
+function _updateSystemInfoWidgets() {
+  let empty = false;
+  if (!system_info) empty = true;
+  ipWidgets.forEach((widget) => {
+    if (empty) return (widget.innerText = "");
+    let out: string[] = [system_info["network"]["ip"]];
+    if (widget.options["city"]) out.push(system_info["location"]["city"]);
+    if (widget.options["region"])
+      out.push(system_info["location"]["region_name"]);
+    if (widget.options["country"])
+      out.push(system_info["location"]["country"]["name"]);
+    widget.innerText = out.join(", ");
+  });
+}
+setInterval(_updateSystemInfo, 600000);
+
+function _updateAll(init: boolean = false) {
+  _updateTimeWidgets();
+  _updateDateWidgets();
+  _updateSystemInfoWidgets();
+  if (init) _updateSystemInfo();
+}
 
 function createWidget(type: WidgetTypes.Generic, options?: {}): Widget;
 function createWidget(
@@ -219,9 +214,7 @@ let widgets = [];
 getStoredWidgets()!.forEach((json: JSONWidget) => {
   displayWidget(Widget.fromJSON(json));
 });
-_updateTimeWidgets();
-_updateDateWidgets();
-_updateIpWidgets();
+_updateAll(true);
 
 window.addEventListener("load", () => {
   document.getElementById("add12h")!.addEventListener("click", () => {
@@ -266,5 +259,6 @@ function newWidget(
   let widget = createWidget(type, options);
   insertWidget(widget, insert_pos);
   displayWidget(widget);
+  _updateAll();
   return widget;
 }
