@@ -25,6 +25,13 @@ widget-generic.widget-2 {
 widget-generic.widget-3 {
   color: #0a0;
 }
+widget-generic.widget-4 {
+  color: #0aa;
+}
+widget-generic.widget-5 {
+  padding: 0 10px;
+  color: #088;
+}
 
 #control {
   display: flex;
@@ -39,7 +46,8 @@ widget-generic.widget-3 {
   justify-content: center;
 }
 #control button,
-#control select {
+#control select,
+#control input {
   font-size: x-large;
   padding: 8px;
 }

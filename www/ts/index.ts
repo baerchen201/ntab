@@ -45,7 +45,11 @@ enum WidgetTypes {
   Time,
   Date,
   Ip,
+  StaticText,
+  DynamicText,
 }
+
+// Dynamic widgets (need updating through scripts)
 
 const timeWidgets: Widget[] = [];
 function _updateTimeWidgets() {
@@ -104,6 +108,15 @@ function _updateAll(init: boolean = false) {
 }
 
 const _widgets: Widget[] = [];
+
+function saveAllWidgets() {
+  let json_widgets: JSONWidget[] = [];
+  _widgets.forEach((widget) => {
+    json_widgets.push(widget.toJSON());
+  });
+  _overwriteStoredWidgets(json_widgets);
+}
+
 function createWidget(type: WidgetTypes.Generic, options?: {}): Widget;
 function createWidget(
   type: WidgetTypes.Time,
@@ -123,6 +136,10 @@ function createWidget(
     country?: boolean;
   }
 ): Widget;
+function createWidget(
+  type: WidgetTypes.StaticText,
+  options?: { text?: string }
+): Widget;
 function createWidget(type: WidgetTypes, options?: WidgetOptions): Widget;
 function createWidget(type: number, options?: {}): Widget {
   let widget: Widget = new Widget(type, options ? options : {});
@@ -137,9 +154,20 @@ function createWidget(type: number, options?: {}): Widget {
     case WidgetTypes.Ip:
       ipWidgets.push(widget);
       break;
+    case WidgetTypes.DynamicText:
+      widget.contentEditable = "true";
+      widget.addEventListener("input", () => {
+        widget.options["text"] = widget.innerText;
+        saveAllWidgets();
+      });
+    case WidgetTypes.StaticText:
+      let text = String(widget.options["text"]).replace("\r", "").trim();
+      if (!text) text = "Hello, World!";
+      widget.innerText = text;
+      break;
 
     default:
-      console.warn("Generic widget initialized");
+      console.warn("Unknown widget initialized", widget);
       break;
   }
 
@@ -161,7 +189,7 @@ function removeWidget(widget?: Widget): void {
       break;
 
     default:
-      console.warn("Generic widget removed");
+      console.warn("Widget removed without remove code", widget);
       break;
   }
   removeStoredWidget(getStoredWidgets()!.indexOf(widget.toJSON()));
@@ -258,6 +286,23 @@ window.addEventListener("load", () => {
       city: options & 0b100,
       region: options & 0b010,
       country: options & 0b001,
+    });
+    insertWidget(widget.toJSON());
+    displayWidget(widget);
+    _updateSystemInfoWidgets();
+  });
+  let text_input = document.getElementById("text-content") as HTMLInputElement;
+  document.getElementById("addstatic")!.addEventListener("click", () => {
+    let widget = createWidget(WidgetTypes.StaticText, {
+      text: text_input.value,
+    });
+    insertWidget(widget.toJSON());
+    displayWidget(widget);
+    _updateSystemInfoWidgets();
+  });
+  document.getElementById("adddynamic")!.addEventListener("click", () => {
+    let widget = createWidget(WidgetTypes.DynamicText, {
+      text: text_input.value,
     });
     insertWidget(widget.toJSON());
     displayWidget(widget);
