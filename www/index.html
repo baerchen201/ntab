@@ -12,6 +12,39 @@
     <div id="widgets"></div>
 
     <div id="control">
+      <div style="margin-right: 20px" class="_control_flags">
+        <style>
+          ._control_flags * {
+            font-size: 20px !important;
+          }
+        </style>
+        <select name="anchor" id="anchor">
+          <option value="" selected>Anchor: None</option>
+          <option value="topleft">Top-Left</option>
+          <option value="topcenter">Top-Center</option>
+          <option value="topright">Top-Right</option>
+          <option value="left">Left</option>
+          <option value="center">Center</option>
+          <option value="right">Right</option>
+          <option value="bottomleft">Bottom-Left</option>
+          <option value="bottomcenter">Bottom-Center</option>
+          <option value="bottomright">Bottom-Right</option>
+        </select>
+        <input
+          value=""
+          type="number"
+          id="fontsize"
+          max="200"
+          min="2"
+          placeholder="Font Size"
+        />
+        <div
+          style="display: flex; flex-direction: row; justify-content: center"
+        >
+          <label for="select">Text selection</label>
+          <input type="checkbox" id="select" value="" />
+        </div>
+      </div>
       <div>
         <select name="addtime-conf" id="addtime-conf">
           <option value="de" selected>24h (19:20)</option>

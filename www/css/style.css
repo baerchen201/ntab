@@ -69,12 +69,16 @@ widget-generic.bottomright {
   bottom: 0;
   right: 0;
 }
+widget-generic.select {
+  user-select: initial;
+}
 
 #control {
   display: flex;
   position: absolute;
   bottom: 0;
   gap: 10px;
+  user-select: none;
 }
 #control > div {
   display: flex;

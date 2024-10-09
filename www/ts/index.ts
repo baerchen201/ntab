@@ -283,7 +283,23 @@ function displayWidget(widget: Widget, container: HTMLElement) {
 window.addEventListener("load", () => {
   const widget_container = document.getElementById("widgets") as HTMLDivElement;
 
-  let widgets = [];
+  let _createWidgetFromUI = (
+    type: WidgetTypes,
+    options?: WidgetOptions
+  ): Widget => {
+    if (!options) options = {};
+    options["_fontsize"] = (
+      document.getElementById("fontsize") as HTMLInputElement
+    ).valueAsNumber;
+    // @ts-ignore This works just fine, no need for strict type-checking
+    options["_anchor"] = (
+      document.getElementById("anchor") as HTMLInputElement
+    ).value;
+    options["_enable_select"] = (
+      document.getElementById("select") as HTMLInputElement
+    ).checked;
+    return createWidget(type, options);
+  };
   getStoredWidgets()!.forEach((json: JSONWidget) => {
     displayWidget(Widget.fromJSON(json), widget_container);
   });
@@ -291,7 +307,7 @@ window.addEventListener("load", () => {
 
   document.getElementById("addtime")!.addEventListener("click", () => {
     let conf = document.getElementById("addtime-conf") as HTMLSelectElement;
-    let widget = createWidget(WidgetTypes.Time, {
+    let widget = _createWidgetFromUI(WidgetTypes.Time, {
       format: conf.value,
     });
     insertWidget(widget.toJSON());
@@ -300,7 +316,7 @@ window.addEventListener("load", () => {
   });
   document.getElementById("adddate")!.addEventListener("click", () => {
     let conf = document.getElementById("adddate-conf") as HTMLSelectElement;
-    let widget = createWidget(WidgetTypes.Date, {
+    let widget = _createWidgetFromUI(WidgetTypes.Date, {
       format: conf.value,
     });
     insertWidget(widget.toJSON());
@@ -310,7 +326,7 @@ window.addEventListener("load", () => {
   document.getElementById("addip")!.addEventListener("click", () => {
     let conf = document.getElementById("addip-conf") as HTMLSelectElement;
     let options = Number(conf.value);
-    let widget = createWidget(WidgetTypes.Ip, {
+    let widget = _createWidgetFromUI(WidgetTypes.Ip, {
       city: options & 0b100,
       region: options & 0b010,
       country: options & 0b001,
@@ -321,7 +337,7 @@ window.addEventListener("load", () => {
   });
   let text_input = document.getElementById("text-content") as HTMLInputElement;
   document.getElementById("addstatic")!.addEventListener("click", () => {
-    let widget = createWidget(WidgetTypes.StaticText, {
+    let widget = _createWidgetFromUI(WidgetTypes.StaticText, {
       text: text_input.value,
     });
     insertWidget(widget.toJSON());
@@ -329,7 +345,7 @@ window.addEventListener("load", () => {
     _updateSystemInfoWidgets();
   });
   document.getElementById("adddynamic")!.addEventListener("click", () => {
-    let widget = createWidget(WidgetTypes.DynamicText, {
+    let widget = _createWidgetFromUI(WidgetTypes.DynamicText, {
       text: text_input.value,
     });
     insertWidget(widget.toJSON());
@@ -337,7 +353,7 @@ window.addEventListener("load", () => {
     _updateSystemInfoWidgets();
   });
   document.getElementById("addspace")!.addEventListener("click", () => {
-    let widget = createWidget(WidgetTypes.Space);
+    let widget = _createWidgetFromUI(WidgetTypes.Space);
     insertWidget(widget.toJSON());
     displayWidget(widget, widget_container);
     _updateSystemInfoWidgets();
