@@ -11,7 +11,24 @@
 
     <div id="widgets"></div>
 
-    <div id="control">
+    <button
+      id="control-toggle"
+      onclick="
+      switch (document.getElementById('control').style.display) {
+        case 'none':
+          document.getElementById('control').style.display = ''
+          this.innerText = 'Hide'
+          break;
+        
+        default:
+          document.getElementById('control').style.display = 'none'
+          this.innerText = 'Show'
+          break;
+      }"
+    >
+      Show
+    </button>
+    <div id="control" style="display: none">
       <div style="margin-right: 20px" class="_control_flags">
         <style>
           ._control_flags * {

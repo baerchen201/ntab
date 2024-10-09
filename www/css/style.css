@@ -92,3 +92,10 @@ widget-generic.select {
   font-size: x-large;
   padding: 8px;
 }
+
+#control-toggle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  font-size: large;
+}
