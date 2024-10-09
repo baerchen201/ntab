@@ -38,6 +38,38 @@ widget-generic.widget-5 {
   color: #088;
 }
 
+widget-generic.anchored {
+  position: absolute;
+}
+widget-generic.topleft {
+  top: 0;
+  left: 0;
+}
+widget-generic.topcenter {
+  top: 0;
+}
+widget-generic.topright {
+  top: 0;
+  right: 0;
+}
+widget-generic.left {
+  left: 0;
+}
+widget-generic.right {
+  right: 0;
+}
+widget-generic.bottomleft {
+  bottom: 0;
+  left: 0;
+}
+widget-generic.bottomcenter {
+  bottom: 0;
+}
+widget-generic.bottomright {
+  bottom: 0;
+  right: 0;
+}
+
 #control {
   display: flex;
   position: absolute;

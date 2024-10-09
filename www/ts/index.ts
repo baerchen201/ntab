@@ -1,5 +1,18 @@
 interface WidgetOptions {
-  [key: string]: string | number | boolean | null;
+  _enable_select?: boolean;
+  _anchor?:
+    | "topleft"
+    | "topcenter"
+    | "topright"
+    | "left"
+    | "center"
+    | "right"
+    | "bottomleft"
+    | "bottomcenter"
+    | "bottomright";
+  _scale?: number;
+  _fontsize?: number;
+  [key: string]: string | number | boolean | null | undefined;
 }
 
 /**
@@ -175,6 +188,14 @@ function createWidget(type: number, options?: {}): Widget {
       console.warn("Unknown widget initialized", widget);
       break;
   }
+
+  if (widget.options["_anchor"])
+    widget.classList.add(widget.options["_anchor"], "anchored");
+  if (widget.options["_enable_select"]) widget.classList.add("select");
+  if (widget.options["_scale"])
+    widget.style.transform = `scale(${widget.options["_scale"]})`;
+  if (widget.options["_fontsize"])
+    widget.style.fontSize = `${widget.options["_fontsize"]}px`;
 
   return widget;
 }
