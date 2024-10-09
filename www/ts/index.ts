@@ -254,25 +254,27 @@ function insertWidget(widget: JSONWidget, offset?: number): JSONWidget[] {
   return _overwriteStoredWidgets(widgets);
 }
 
-function displayWidget(widget: Widget) {
-  document.body.appendChild(widget);
+function displayWidget(widget: Widget, container: HTMLElement) {
+  container.appendChild(widget);
   console.log("Widget", widget, "\n Type", widget.type, "\n", widget.options);
 }
 
-let widgets = [];
-getStoredWidgets()!.forEach((json: JSONWidget) => {
-  displayWidget(Widget.fromJSON(json));
-});
-_updateAll(true);
-
 window.addEventListener("load", () => {
+  const widget_container = document.getElementById("widgets") as HTMLDivElement;
+
+  let widgets = [];
+  getStoredWidgets()!.forEach((json: JSONWidget) => {
+    displayWidget(Widget.fromJSON(json), widget_container);
+  });
+  _updateAll(true);
+
   document.getElementById("addtime")!.addEventListener("click", () => {
     let conf = document.getElementById("addtime-conf") as HTMLSelectElement;
     let widget = createWidget(WidgetTypes.Time, {
       format: conf.value,
     });
     insertWidget(widget.toJSON());
-    displayWidget(widget);
+    displayWidget(widget, widget_container);
     _updateTimeWidgets();
   });
   document.getElementById("adddate")!.addEventListener("click", () => {
@@ -281,7 +283,7 @@ window.addEventListener("load", () => {
       format: conf.value,
     });
     insertWidget(widget.toJSON());
-    displayWidget(widget);
+    displayWidget(widget, widget_container);
     _updateDateWidgets();
   });
   document.getElementById("addip")!.addEventListener("click", () => {
@@ -293,7 +295,7 @@ window.addEventListener("load", () => {
       country: options & 0b001,
     });
     insertWidget(widget.toJSON());
-    displayWidget(widget);
+    displayWidget(widget, widget_container);
     _updateSystemInfoWidgets();
   });
   let text_input = document.getElementById("text-content") as HTMLInputElement;
@@ -302,7 +304,7 @@ window.addEventListener("load", () => {
       text: text_input.value,
     });
     insertWidget(widget.toJSON());
-    displayWidget(widget);
+    displayWidget(widget, widget_container);
     _updateSystemInfoWidgets();
   });
   document.getElementById("adddynamic")!.addEventListener("click", () => {
@@ -310,13 +312,13 @@ window.addEventListener("load", () => {
       text: text_input.value,
     });
     insertWidget(widget.toJSON());
-    displayWidget(widget);
+    displayWidget(widget, widget_container);
     _updateSystemInfoWidgets();
   });
   document.getElementById("addspace")!.addEventListener("click", () => {
     let widget = createWidget(WidgetTypes.Space);
     insertWidget(widget.toJSON());
-    displayWidget(widget);
+    displayWidget(widget, widget_container);
     _updateSystemInfoWidgets();
   });
   document.getElementById("remove")!.addEventListener("click", () => {
@@ -331,11 +333,12 @@ window.addEventListener("load", () => {
 function newWidget(
   type: WidgetTypes,
   options?: WidgetOptions,
+  container: HTMLElement = document.getElementById("widgets")!,
   insert_pos?: number
 ): Widget {
   let widget = createWidget(type, options);
   insertWidget(widget, insert_pos);
-  displayWidget(widget);
+  displayWidget(widget, container);
   _updateAll();
   return widget;
 }
