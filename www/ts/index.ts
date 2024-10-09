@@ -87,9 +87,9 @@ function _updateSystemInfo() {
 }
 function _updateSystemInfoWidgets() {
   let empty = false;
-  if (!system_info) empty = true;
+  if (!system_info || !system_info["network"]) empty = true;
   ipWidgets.forEach((widget) => {
-    if (empty) return (widget.innerText = "");
+    if (empty) return (widget.innerText = "No network information");
     let out: string[] = [system_info["network"]["ip"]];
     if (widget.options["city"]) out.push(system_info["location"]["city"]);
     if (widget.options["region"])
@@ -153,6 +153,7 @@ function createWidget(type: number, options?: {}): Widget {
       dateWidgets.push(widget);
       break;
     case WidgetTypes.Ip:
+      widget.innerText = "Loading...";
       ipWidgets.push(widget);
       break;
     case WidgetTypes.DynamicText:
