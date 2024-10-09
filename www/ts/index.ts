@@ -47,6 +47,7 @@ enum WidgetTypes {
   Ip,
   StaticText,
   DynamicText,
+  Space,
 }
 
 // Dynamic widgets (need updating through scripts)
@@ -164,6 +165,9 @@ function createWidget(type: number, options?: {}): Widget {
       let text = String(widget.options["text"]).replace("\r", "").trim();
       if (!text) text = "Hello, World!";
       widget.innerText = text;
+      break;
+    case WidgetTypes.Space:
+      widget.innerText = "\n";
       break;
 
     default:
@@ -304,6 +308,12 @@ window.addEventListener("load", () => {
     let widget = createWidget(WidgetTypes.DynamicText, {
       text: text_input.value,
     });
+    insertWidget(widget.toJSON());
+    displayWidget(widget);
+    _updateSystemInfoWidgets();
+  });
+  document.getElementById("addspace")!.addEventListener("click", () => {
+    let widget = createWidget(WidgetTypes.Space);
     insertWidget(widget.toJSON());
     displayWidget(widget);
     _updateSystemInfoWidgets();
