@@ -204,9 +204,9 @@ function createWidget(type: number, options?: {}): Widget {
         case 9:
         case 10:
         case 11:
-        case 12:
           parts.push("Good morning");
           break;
+        case 12:
         case 13:
         case 14:
         case 15:
