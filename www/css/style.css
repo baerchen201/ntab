@@ -88,9 +88,15 @@ widget-generic.select {
 }
 #control button,
 #control select,
-#control input {
+#control input,
+#control a {
   font-size: x-large;
   padding: 8px;
+}
+#control a {
+  color: #00f;
+  background: #0002;
+  text-align: center;
 }
 
 #control-toggle {
