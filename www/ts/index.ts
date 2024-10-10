@@ -1,5 +1,4 @@
 interface WidgetOptions {
-  _enable_select?: boolean;
   _anchor?:
     | "topleft"
     | "topcenter"
@@ -10,8 +9,7 @@ interface WidgetOptions {
     | "bottomleft"
     | "bottomcenter"
     | "bottomright";
-  _scale?: number;
-  _fontsize?: number;
+  _css?: string;
   [key: string]: string | number | boolean | null | undefined;
 }
 
@@ -251,11 +249,8 @@ function createWidget(type: number, options?: {}): Widget {
 
   if (widget.options["_anchor"])
     widget.classList.add(widget.options["_anchor"], "anchored");
-  if (widget.options["_enable_select"]) widget.classList.add("select");
-  if (widget.options["_scale"])
-    widget.style.transform = `scale(${widget.options["_scale"]})`;
-  if (widget.options["_fontsize"])
-    widget.style.fontSize = `${widget.options["_fontsize"]}px`;
+  // @ts-ignore Works on my machine
+  if (widget.options["_css"]) widget.style = widget.options["_css"];
 
   return widget;
 }
@@ -375,16 +370,23 @@ window.addEventListener("load", () => {
     options?: WidgetOptions
   ): Widget => {
     if (!options) options = {};
-    options["_fontsize"] = (
-      document.getElementById("fontsize") as HTMLInputElement
-    ).valueAsNumber;
+    let font_size = (document.getElementById("fontsize") as HTMLInputElement)
+        .valueAsNumber,
+      user_select = (document.getElementById("select") as HTMLInputElement)
+        .checked
+        ? "initial"
+        : null;
+
+    options["_css"] = `${font_size ? `font-size:${font_size}px;` : ""}${
+      user_select ? `user-select:${user_select};` : ""
+    }`;
+    console.debug(options["_css"]);
+
     // @ts-ignore This works just fine, no need for strict type-checking
     options["_anchor"] = (
       document.getElementById("anchor") as HTMLInputElement
     ).value;
-    options["_enable_select"] = (
-      document.getElementById("select") as HTMLInputElement
-    ).checked;
+
     return createWidget(type, options);
   };
   getStoredWidgets()!.forEach((json: JSONWidget) => {
