@@ -273,7 +273,7 @@ function removeWidget(widget?: Widget): void {
       console.warn("Widget removed without remove code", widget);
       break;
   }
-  removeStoredWidget(getStoredWidgets()!.indexOf(widget.toJSON()));
+  saveAllWidgets();
 }
 
 /**
