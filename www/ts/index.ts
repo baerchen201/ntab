@@ -280,6 +280,33 @@ function displayWidget(widget: Widget, container: HTMLElement) {
   console.log("Widget", widget, "\n Type", widget.type, "\n", widget.options);
 }
 
+/**
+ * Stores the background in memory and applies it to document.body
+ * @param value The new CSS background property value
+ */
+function setBackground(value: string): void {
+  localStorage.setItem("background", value);
+  document.body.style.background = value;
+}
+
+/**
+ * Recalls the background stored in memory
+ * @returns The stored CSS background property value
+ */
+function getBackground(): string {
+  let bg = localStorage.getItem("background");
+  return bg ? bg : "";
+}
+
+/**
+ * Applies the CSS background stored in memory to document.body
+ */
+function applyStoredBackground() {
+  setBackground(getBackground());
+}
+
+applyStoredBackground(); //? Not sure if I should put this into window.onload, it should be just fine like this, and prevent the flash of white background.
+
 window.addEventListener("load", () => {
   const widget_container = document.getElementById("widgets") as HTMLDivElement;
 
@@ -364,6 +391,14 @@ window.addEventListener("load", () => {
   document.getElementById("clear")!.addEventListener("click", () => {
     _overwriteStoredWidgets([]);
     location.reload();
+  });
+
+  let background_conf = document.getElementById(
+    "background-conf"
+  ) as HTMLInputElement;
+  background_conf.value = getBackground();
+  background_conf.addEventListener("input", (e: Event) => {
+    setBackground((e.target as HTMLInputElement).value);
   });
 });
 
