@@ -131,6 +131,7 @@ function saveAllWidgets() {
   _overwriteStoredWidgets(json_widgets);
 }
 
+// Widget creation (add definitions here)
 function createWidget(type: WidgetTypes.Generic, options?: {}): Widget;
 function createWidget(
   type: WidgetTypes.Time,
@@ -151,7 +152,7 @@ function createWidget(
   }
 ): Widget;
 function createWidget(
-  type: WidgetTypes.StaticText,
+  type: WidgetTypes.StaticText | WidgetTypes.DynamicText,
   options?: { text?: string }
 ): Widget;
 function createWidget(type: WidgetTypes, options?: WidgetOptions): Widget;
