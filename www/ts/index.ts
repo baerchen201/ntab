@@ -485,6 +485,12 @@ window.addEventListener("load", () => {
   console.log(
     "  removeWidget([ Widget (HTML element) ]): Remove widget [ Widget ] or the widget added last"
   );
+  console.log(
+    "  exportAllSettings([ Whether to export as string (boolean) ]): Export all settings (including background) as JSON Object or String"
+  );
+  console.log(
+    "  importAllSettings(< JSON Value (Object / String) >): Import all settings (including background) from string, that was previously exported using exportAllSettings()"
+  );
   console.warn(
     "The following functions/values can be used/modified directly, however, please check the code first to understand exactly what they do."
   );
@@ -508,4 +514,31 @@ function newWidget(
   displayWidget(widget, container);
   _updateAll();
   return widget;
+}
+
+interface JSONSettings {
+  widgets: JSONWidget[];
+  background: string;
+}
+/**
+ * Export all settings to JSON Object/String
+ * @param string Whether to return as Object or String
+ * @returns The exported JSON Object/String
+ */
+function exportAllSettings(string: boolean = true): JSONSettings | string {
+  let json: JSONSettings = {
+    widgets: getStoredWidgets()!,
+    background: getBackground(),
+  };
+  return string ? JSON.stringify(json) : json;
+}
+/**
+ * Import all settings from JSON Object/String
+ * @param json The JSON Object/String to import from
+ */
+function importAllSettings(json: JSONSettings | string): void {
+  if (typeof json == "string") json = JSON.parse(json) as JSONSettings;
+  _overwriteStoredWidgets(json.widgets);
+  setBackground(json.background);
+  location.reload();
 }
