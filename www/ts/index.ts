@@ -61,6 +61,7 @@ enum WidgetTypes {
   StaticText,
   DynamicText,
   Space,
+  Greeting,
 }
 
 // Dynamic widgets (need updating through scripts)
@@ -155,6 +156,10 @@ function createWidget(
   type: WidgetTypes.StaticText | WidgetTypes.DynamicText,
   options?: { text?: string }
 ): Widget;
+function createWidget(
+  type: WidgetTypes.Greeting,
+  options?: { name?: string }
+): Widget;
 function createWidget(type: WidgetTypes, options?: WidgetOptions): Widget;
 function createWidget(type: number, options?: {}): Widget {
   let widget: Widget = new Widget(type, options ? options : {});
@@ -180,6 +185,49 @@ function createWidget(type: number, options?: {}): Widget {
       let text = String(widget.options["text"]).replace("\r", "").trim();
       if (!text) text = "Hello, World!";
       widget.innerText = text;
+      break;
+    case WidgetTypes.Greeting:
+      let parts: string[] = [];
+      switch (new Date().getHours()) {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+          parts.push("Good morning");
+          break;
+        case 13:
+        case 14:
+        case 15:
+        case 16:
+        case 17:
+          parts.push("Good afternoon");
+          break;
+        case 18:
+        case 19:
+        case 20:
+        case 21:
+        case 22:
+        case 23:
+        case 24: // Oh, you wait until you see the default case
+          parts.push("Good evening");
+          break;
+
+        default:
+          parts.push("Hello"); // WHAT THE F*** DID YOU EVEN DO
+          break;
+      }
+      if (widget.options["name"])
+        parts.push(String(widget.options["name"]).trim());
+      widget.innerText = parts.join(", ");
       break;
     case WidgetTypes.Space:
       widget.innerText = "\n";
@@ -375,6 +423,15 @@ window.addEventListener("load", () => {
   document.getElementById("adddynamic")!.addEventListener("click", () => {
     let widget = _createWidgetFromUI(WidgetTypes.DynamicText, {
       text: text_input.value,
+    });
+    insertWidget(widget.toJSON());
+    displayWidget(widget, widget_container);
+    _updateSystemInfoWidgets();
+  });
+  document.getElementById("addgreeting")!.addEventListener("click", () => {
+    let widget = _createWidgetFromUI(WidgetTypes.Greeting, {
+      name: (document.getElementById("greeting-name") as HTMLInputElement)
+        .value,
     });
     insertWidget(widget.toJSON());
     displayWidget(widget, widget_container);
