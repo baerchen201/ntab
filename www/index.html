@@ -11,9 +11,10 @@
 
     <div id="widgets"></div>
 
-    <button
-      id="control-toggle"
-      onclick="
+    <div id="control-toggle-wrapper">
+      <button
+        id="control-toggle"
+        onclick="
       switch (document.getElementById('control').style.display) {
         case 'none':
           document.getElementById('control').style.display = ''
@@ -25,9 +26,10 @@
           this.innerText = 'Show'
           break;
       }"
-    >
-      Show
-    </button>
+      >
+        Show
+      </button>
+    </div>
     <div id="control" style="display: none">
       <div style="margin-right: 20px" class="_control_flags">
         <style>
