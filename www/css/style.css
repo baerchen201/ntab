@@ -101,7 +101,14 @@ widget-generic.select {
 
 #control-toggle {
   position: absolute;
+  z-index: 2;
+  opacity: 0.5;
+  transition: opacity 200ms;
+  width: 60px;
   bottom: 0;
   left: 0;
   font-size: large;
+}
+#control-toggle:hover {
+  opacity: 1;
 }
