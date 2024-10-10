@@ -62,9 +62,10 @@ enum WidgetTypes {
   DynamicText,
   Space,
   Greeting,
+  CSS,
 }
 
-// Dynamic widgets (need updating through scripts)
+//* Dynamic widgets (need updating through scripts)
 
 const timeWidgets: Widget[] = [];
 function _updateTimeWidgets() {
@@ -132,7 +133,7 @@ function saveAllWidgets() {
   _overwriteStoredWidgets(json_widgets);
 }
 
-// Widget creation (add definitions here)
+//* Widget creation (add definitions here)
 function createWidget(type: WidgetTypes.Generic, options?: {}): Widget;
 function createWidget(
   type: WidgetTypes.Time,
@@ -159,6 +160,10 @@ function createWidget(
 function createWidget(
   type: WidgetTypes.Greeting,
   options?: { name?: string }
+): Widget;
+function createWidget(
+  type: WidgetTypes.CSS,
+  options: { value: string }
 ): Widget;
 function createWidget(type: WidgetTypes, options?: WidgetOptions): Widget;
 function createWidget(type: number, options?: {}): Widget {
@@ -231,6 +236,12 @@ function createWidget(type: number, options?: {}): Widget {
       break;
     case WidgetTypes.Space:
       widget.innerText = "\n";
+      break;
+    case WidgetTypes.CSS:
+      // TODO: Add proper live updating (after adding a proper UI first)
+      let style_element = document.createElement("style");
+      widget.appendChild(style_element);
+      style_element.innerHTML = String(widget.options["value"]);
       break;
 
     default:

@@ -38,6 +38,9 @@ widget-generic.widget-5 {
   padding: 0 10px;
   color: #088;
 }
+widget-generic.widget-8 {
+  display: none;
+}
 
 widget-generic.anchored {
   position: absolute;
