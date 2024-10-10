@@ -122,11 +122,11 @@ function _updateAll(init: boolean = false) {
   if (init) _updateSystemInfo();
 }
 
-const _widgets: Widget[] = [];
+const widgets: Widget[] = [];
 
 function saveAllWidgets() {
   let json_widgets: JSONWidget[] = [];
-  _widgets.forEach((widget) => {
+  widgets.forEach((widget) => {
     json_widgets.push(widget.toJSON());
   });
   _overwriteStoredWidgets(json_widgets);
@@ -163,7 +163,7 @@ function createWidget(
 function createWidget(type: WidgetTypes, options?: WidgetOptions): Widget;
 function createWidget(type: number, options?: {}): Widget {
   let widget: Widget = new Widget(type, options ? options : {});
-  _widgets.push(widget);
+  widgets.push(widget);
   switch (type) {
     case WidgetTypes.Time:
       timeWidgets.push(widget);
@@ -249,9 +249,9 @@ function createWidget(type: number, options?: {}): Widget {
   return widget;
 }
 function removeWidget(widget?: Widget): void {
-  if (!widget) widget = _widgets[_widgets.length - 1];
+  if (!widget) widget = widgets[widgets.length - 1];
   widget.remove();
-  _widgets.splice(_widgets.indexOf(widget), 1);
+  widgets.splice(widgets.indexOf(widget), 1);
   switch (widget.type) {
     case WidgetTypes.Time:
       timeWidgets.splice(timeWidgets.indexOf(widget), 1);
@@ -326,7 +326,7 @@ function insertWidget(widget: JSONWidget, offset?: number): JSONWidget[] {
 
 function displayWidget(widget: Widget, container: HTMLElement) {
   container.appendChild(widget);
-  console.log("Widget", widget, "\n Type", widget.type, "\n", widget.options);
+  console.debug("Widget", widget, "\n Type", widget.type, "\n", widget.options);
 }
 
 /**
@@ -458,6 +458,30 @@ window.addEventListener("load", () => {
   background_conf.addEventListener("input", (e: Event) => {
     setBackground((e.target as HTMLInputElement).value);
   });
+
+  console.clear();
+  console.warn(
+    "The console is for advanced users only, only use it if you know what you're doing."
+  );
+  console.info(
+    "You can use the following functions to manipulate the widgets list:"
+  );
+  console.log(
+    "  newWidget(WidgetTypes.< Type >, [ Options (Object)]): Create new widget of type < Type > with options [ Options ]"
+  );
+  console.log(
+    "  removeWidget([ Widget (HTML element) ]): Remove widget [ Widget ] or the widget added last"
+  );
+  console.warn(
+    "The following functions/values can be used/modified directly, however, please check the code first to understand exactly what they do."
+  );
+  console.log(
+    "  saveAllWidgets(): Save all manual modifications to widgets (like widget options)"
+  );
+  console.log(
+    "  widgets (Widget[]): List of all loaded widgets, can be used instead of document.getElementsByTagName\n    You will need to save modifications to widgets with saveAllWidgets()."
+  );
+  // TODO: Add more functions
 });
 
 function newWidget(
