@@ -45,6 +45,42 @@ class _WidgetConfigs extends HTMLElement {
 
     this.appendChild(delete_button);
   }
+
+  register(
+    type: BooleanConstructor,
+    callback: string | ((value: any) => void),
+    name: string,
+    long_name?: string
+  ) {
+    if (typeof callback == "string") {
+      let opt_name: string = callback;
+      callback = (value: any) => {
+        this.widget.options[opt_name] = value;
+        _update(this.widget.type);
+      };
+    }
+    if (!long_name) {
+      long_name = name;
+    }
+
+    if (type == Boolean) {
+      let root: HTMLDivElement = document.createElement("div"),
+        checkbox: HTMLInputElement = document.createElement("input"),
+        label: HTMLLabelElement = document.createElement("label");
+      checkbox.type = "checkbox";
+      checkbox.addEventListener("change", () => {
+        callback(checkbox.checked);
+      });
+
+      label.innerText = long_name;
+      checkbox.name = name;
+      label.htmlFor = checkbox.name;
+
+      root.appendChild(label);
+      root.appendChild(checkbox);
+      this.appendChild(root);
+    }
+  }
 }
 window.customElements.define("widget-config", _WidgetConfigs);
 
@@ -227,6 +263,15 @@ function createWidget(type: number, options?: {}): Widget {
   switch (type) {
     case WidgetTypes.Time:
       timeWidgets.push(widget);
+      widget.configs.register(
+        Boolean,
+        (value: boolean) => {
+          widget.options["format"] = value ? "us" : "de";
+          _update(widget.type);
+        },
+        "format",
+        "12-Hour clock"
+      );
       break;
     case WidgetTypes.Date:
       dateWidgets.push(widget);
