@@ -107,6 +107,7 @@ widget-generic.select {
 }
 
 widget-config {
+  position: relative;
   display: flex;
   width: 450px;
   padding: 8px;
@@ -115,4 +116,14 @@ widget-config {
 }
 widget-config > h3 {
   margin: 5px 0;
+}
+widget-config > button.delete {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  padding: 8px;
+}
+widget-config > button.delete > img {
+  height: 20px;
+  width: 20px;
 }

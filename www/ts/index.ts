@@ -33,6 +33,17 @@ class _WidgetConfigs extends HTMLElement {
     header.innerText = WidgetNames[widget.type];
 
     this.appendChild(header);
+
+    let delete_button = document.createElement("button"),
+      delete_icon = document.createElement("img");
+    delete_icon.src = "img/trash-can-regular.svg";
+    delete_button.appendChild(delete_icon);
+    delete_button.classList.add("delete");
+    delete_button.addEventListener("click", () => {
+      removeWidget(this.widget);
+    });
+
+    this.appendChild(delete_button);
   }
 }
 window.customElements.define("widget-config", _WidgetConfigs);
@@ -65,6 +76,11 @@ class Widget extends HTMLElement {
 
   toJSON(): JSONWidget {
     return { type: this.type, options: this.options };
+  }
+
+  remove() {
+    super.remove();
+    this.configs.remove();
   }
 }
 window.customElements.define("widget-generic", Widget);
