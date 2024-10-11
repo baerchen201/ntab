@@ -47,7 +47,7 @@ class _WidgetConfigs extends HTMLElement {
   }
 
   register(
-    type: BooleanConstructor,
+    type: BooleanConstructor | { [key: string]: string },
     callback: string | ((value: any) => void),
     get: string | (() => any),
     name: string,
@@ -86,6 +86,30 @@ class _WidgetConfigs extends HTMLElement {
 
       root.appendChild(label);
       root.appendChild(checkbox);
+      this.appendChild(root);
+    } else if (typeof type == "object") {
+      let root: HTMLDivElement = document.createElement("div"),
+        label: HTMLLabelElement = document.createElement("label"),
+        select: HTMLSelectElement = document.createElement("select");
+      Object.keys(type).forEach((key) => {
+        let option = document.createElement("option");
+        option.value = key;
+        option.label = type[key];
+        select.appendChild(option);
+      });
+      select.value = get();
+      select.addEventListener("change", () => {
+        callback(select.value);
+        _update(this.widget.type);
+        saveAllWidgets();
+      });
+
+      label.innerText = long_name;
+      select.name = name;
+      label.htmlFor = select.name;
+
+      root.appendChild(label);
+      root.appendChild(select);
       this.appendChild(root);
     }
   }
@@ -272,13 +296,11 @@ function createWidget(type: number, options?: {}): Widget {
     case WidgetTypes.Time:
       timeWidgets.push(widget);
       widget.configs.register(
-        Boolean,
-        (value: boolean) => {
-          widget.options["format"] = value ? "us" : "de";
-        },
-        () => widget.options["format"] == "us",
+        { de: "24h", us: "12h" },
         "format",
-        "12-Hour clock"
+        "format",
+        "format",
+        "Clock format"
       );
       break;
     case WidgetTypes.Date:
