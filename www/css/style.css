@@ -122,6 +122,9 @@ widget-config > button.delete {
   top: 5px;
   right: 10px;
   padding: 8px;
+  border-radius: 50%;
+  border: 2px solid #444;
+  background: #ddd;
 }
 widget-config > button.delete > img {
   height: 20px;
