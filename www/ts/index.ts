@@ -225,6 +225,39 @@ class _WidgetConfigs extends HTMLElement {
       "anchor",
       "Anchor"
     )["root"].style.marginTop = "20px";
+
+    let element_css_registry = this.register(
+      String,
+      (value: string) => {
+        // @ts-ignore someone pls tell me how do i disable this
+        this.widget.style = this.widget.options["_css"] = value;
+      },
+      "_css",
+      "css",
+      "Element CSS"
+    );
+    element_css_registry["input"]!.placeholder = ((arr: string[]) => {
+      return arr[Math.floor(Math.random() * arr.length)];
+    })([
+      "color: white",
+      "background: rgba(0, 0, 0, 0.5)",
+      "opacity: 0.5",
+      "filter: blur(2px)",
+      "font-family: Comic Sans MS",
+      "font-size: 50px",
+      "margin-bottom: 20px",
+    ]);
+    let css_syntax_link = document.createElement("a");
+    css_syntax_link.href =
+      "https://developer.mozilla.org/en-US/docs/Web/CSS/Syntax#css_declarations";
+    css_syntax_link.style.color = "inherit";
+    element_css_registry["label"].style.cursor = "pointer";
+    element_css_registry["label"].remove();
+    css_syntax_link.appendChild(element_css_registry["label"]);
+    element_css_registry["root"].insertBefore(
+      css_syntax_link,
+      element_css_registry["input"]!
+    );
   }
 }
 window.customElements.define("widget-config", _WidgetConfigs);
