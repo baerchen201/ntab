@@ -189,4 +189,8 @@ widget-config > div > * {
 
 #background-conf {
   font-size: x-large;
+  resize: vertical;
+  width: 450px;
+  height: 200px;
+  max-height: 400px;
 }
