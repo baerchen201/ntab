@@ -549,16 +549,14 @@ function createWidget(type: number, options?: { [key: string]: any }): Widget {
         saveAllWidgets();
       });
     case WidgetTypes.StaticText:
-      let text = String(widget.options["text"]).replace("\r", "").trim();
+      let text = String(widget.options["text"]).trim();
       if (!text || !widget.options["text"])
         widget.options["text"] = text = "Hello, World!";
       widget.innerText = text;
       widget.configs.register(
-        String,
+        HTMLTextAreaElement,
         (value: string) => {
-          widget.options["text"] = widget.innerText = value
-            .replace("\r", "")
-            .trim();
+          widget.options["text"] = widget.innerText = value.trim();
         },
         "text",
         "text",
