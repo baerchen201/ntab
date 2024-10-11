@@ -147,3 +147,7 @@ widget-config > div.large {
 widget-config > div > * {
   font-size: larger;
 }
+
+#background-conf {
+  font-size: x-large;
+}

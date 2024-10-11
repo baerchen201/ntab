@@ -731,6 +731,14 @@ window.addEventListener("load", () => {
     option.innerText = WidgetNames[i];
     addwidget.appendChild(option);
   }
+
+  let background_conf: HTMLTextAreaElement = document.getElementById(
+    "background-conf"
+  ) as HTMLTextAreaElement;
+  background_conf.value = getBackground();
+  background_conf.addEventListener("input", () => {
+    setBackground(background_conf.value);
+  });
 });
 
 function help() {
