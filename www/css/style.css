@@ -34,9 +34,11 @@ widget-generic.widget-3 {
 }
 widget-generic.widget-4,
 widget-generic.widget-7 {
+  white-space: pre;
   color: #0aa;
 }
 widget-generic.widget-5 {
+  white-space: pre;
   padding: 0 10px;
   color: #088;
 }
@@ -83,49 +85,112 @@ widget-generic.select {
 #control {
   display: flex;
   position: absolute;
-  bottom: 8px;
-  gap: 10px;
-  user-select: none;
-}
-#control > div {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  justify-content: center;
-}
-#control button,
-#control select,
-#control input,
-#control a {
-  font-size: x-large;
-  padding: 8px;
-}
-#control a {
-  color: #00f;
-  background: #0002;
-  text-align: center;
-}
-
-#control-toggle-wrapper {
-  position: absolute;
-  z-index: 2;
   top: 0;
   left: 0;
-  width: 175px;
-  height: 175px;
+  bottom: 0;
+  width: 500px;
+  background: #fff;
+  z-index: 3;
+  flex-direction: column;
+  padding: 8px;
+  overflow-y: scroll;
+  align-items: center;
+  gap: 10px;
+
+  transition: transform 500ms;
+  transform: translate(-100%);
+  pointer-events: none;
 }
-#control-toggle {
+#control.show {
+  transform: none;
+  pointer-events: initial;
+}
+
+#control-hide,
+#control-show {
   position: absolute;
   top: 8px;
   left: 8px;
-  opacity: 0;
-  transition: opacity 200ms;
-  width: 60px;
+  padding: 8px;
   font-size: large;
+  cursor: pointer;
 }
-#control-toggle-wrapper:hover #control-toggle {
-  opacity: 0.5;
+#control-show {
+  z-index: 2;
+  opacity: 0;
+  animation: fadeout 1s ease-in-out;
+  transition: opacity 200ms;
 }
-#control-toggle:hover {
-  opacity: 1 !important;
+#control-show:hover {
+  opacity: 1;
+}
+@keyframes fadeout {
+  0% {
+    opacity: 0.5;
+  }
+  75% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+#addwidget {
+  width: 400px;
+  font-size: x-large;
+  padding: 8px;
+}
+#widget-configs {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+}
+
+widget-config {
+  position: relative;
+  display: flex;
+  width: 450px;
+  padding: 8px;
+  border: 2px solid #444;
+  border-radius: 6px;
+  flex-direction: column;
+}
+widget-config > h3 {
+  margin: 5px 0;
+}
+widget-config > button.delete {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  padding: 8px;
+  border-radius: 50%;
+  border: 2px solid #444;
+  background: #ddd;
+}
+widget-config > button.delete > img {
+  height: 20px;
+  width: 20px;
+}
+widget-config > div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+widget-config > div.large {
+  flex-direction: column;
+  align-items: initial;
+  justify-content: center;
+}
+widget-config > div > * {
+  font-size: larger;
+}
+
+#background-conf {
+  font-size: x-large;
+  resize: vertical;
+  width: 450px;
+  height: 200px;
+  max-height: 400px;
 }
