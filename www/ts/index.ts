@@ -462,8 +462,11 @@ function createWidget(
   options: { value: string }
 ): Widget;
 function createWidget(type: WidgetTypes, options?: WidgetOptions): Widget;
-function createWidget(type: number, options?: {}): Widget {
-  let widget: Widget = new Widget(type, options ? options : {});
+function createWidget(type: number, options?: { [key: string]: any }): Widget {
+  if (!options) options = {};
+  if (!options["_anchor"]) options["_anchor"] = "";
+  if (!options["_css"]) options["_css"] = "";
+  let widget: Widget = new Widget(type, options);
   widgets.push(widget);
   switch (type) {
     case WidgetTypes.Time:
@@ -516,7 +519,8 @@ function createWidget(type: number, options?: {}): Widget {
       });
     case WidgetTypes.StaticText:
       let text = String(widget.options["text"]).replace("\r", "").trim();
-      if (!text) text = "Hello, World!";
+      if (!text || !widget.options["text"])
+        widget.options["text"] = text = "Hello, World!";
       widget.innerText = text;
       widget.configs.register(
         String,
