@@ -49,6 +49,7 @@ class _WidgetConfigs extends HTMLElement {
   register(
     type: BooleanConstructor,
     callback: string | ((value: any) => void),
+    get: string | (() => any),
     name: string,
     long_name?: string
   ) {
@@ -59,6 +60,10 @@ class _WidgetConfigs extends HTMLElement {
         _update(this.widget.type);
       };
     }
+    if (typeof get == "string") {
+      let opt_name: string = get;
+      get = () => this.widget.options[opt_name];
+    }
     if (!long_name) {
       long_name = name;
     }
@@ -68,8 +73,11 @@ class _WidgetConfigs extends HTMLElement {
         checkbox: HTMLInputElement = document.createElement("input"),
         label: HTMLLabelElement = document.createElement("label");
       checkbox.type = "checkbox";
+      checkbox.checked = Boolean(get());
       checkbox.addEventListener("change", () => {
         callback(checkbox.checked);
+        _update(this.widget.type);
+        saveAllWidgets();
       });
 
       label.innerText = long_name;
@@ -267,8 +275,8 @@ function createWidget(type: number, options?: {}): Widget {
         Boolean,
         (value: boolean) => {
           widget.options["format"] = value ? "us" : "de";
-          _update(widget.type);
         },
+        () => widget.options["format"] == "us",
         "format",
         "12-Hour clock"
       );
