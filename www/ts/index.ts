@@ -8,7 +8,9 @@ interface WidgetOptions {
     | "right"
     | "bottomleft"
     | "bottomcenter"
-    | "bottomright";
+    | "bottomright"
+    | ""
+    | string;
   _css?: string;
   [key: string]: string | number | boolean | null | undefined;
 }
@@ -188,6 +190,41 @@ class _WidgetConfigs extends HTMLElement {
     }
 
     throw new TypeError("Invalid option type");
+  }
+
+  registerUniversal() {
+    this.register(
+      {
+        "": "None",
+        topleft: "Top-Left",
+        topcenter: "Top-Center",
+        topright: "Top-Right",
+        left: "Left",
+        center: "Center",
+        right: "Right",
+        bottomleft: "Bottom-Left",
+        bottomcenter: "Bottom-Center",
+        bottomright: "Bottom-Right",
+      },
+      (value: string) => {
+        if (value) {
+          if (this.widget.options["_anchor"])
+            this.widget.classList.remove(this.widget.options["_anchor"]);
+          this.widget.classList.add(
+            (this.widget.options["_anchor"] = value),
+            "anchored"
+          );
+        } else {
+          if (this.widget.options["_anchor"])
+            this.widget.classList.remove(this.widget.options["_anchor"]);
+          this.widget.options["_anchor"] = "";
+          this.widget.classList.remove("anchored");
+        }
+      },
+      "_anchor",
+      "anchor",
+      "Anchor"
+    )["root"].style.marginTop = "20px";
   }
 }
 window.customElements.define("widget-config", _WidgetConfigs);
@@ -378,6 +415,7 @@ function createWidget(type: number, options?: {}): Widget {
         "format",
         "Clock format"
       );
+      widget.configs.registerUniversal();
       break;
     case WidgetTypes.Date:
       dateWidgets.push(widget);
@@ -388,6 +426,7 @@ function createWidget(type: number, options?: {}): Widget {
         "format",
         "Date format"
       );
+      widget.configs.registerUniversal();
       break;
     case WidgetTypes.Ip:
       widget.innerText = "Loading...";
@@ -407,6 +446,7 @@ function createWidget(type: number, options?: {}): Widget {
         "country",
         "Display coutry"
       );
+      widget.configs.registerUniversal();
       break;
     case WidgetTypes.DynamicText:
       widget.contentEditable = "true";
@@ -429,6 +469,7 @@ function createWidget(type: number, options?: {}): Widget {
         "text",
         "Content"
       );
+      widget.configs.registerUniversal();
       break;
     case WidgetTypes.Greeting:
       let parts: string[] = [];
@@ -484,6 +525,7 @@ function createWidget(type: number, options?: {}): Widget {
         "name",
         "Your name"
       );
+      widget.configs.registerUniversal();
       break;
     case WidgetTypes.Space:
       widget.innerText = "\n";
