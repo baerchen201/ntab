@@ -47,7 +47,7 @@ class _WidgetConfigs extends HTMLElement {
   }
 
   register(
-    type: BooleanConstructor | { [key: string]: string },
+    type: BooleanConstructor | { [key: string]: string } | StringConstructor,
     callback: string | ((value: any) => void),
     get: string | (() => any),
     name: string,
@@ -86,6 +86,25 @@ class _WidgetConfigs extends HTMLElement {
 
       root.appendChild(label);
       root.appendChild(checkbox);
+      this.appendChild(root);
+    } else if (type == String) {
+      let root: HTMLDivElement = document.createElement("div"),
+        label: HTMLLabelElement = document.createElement("label"),
+        input: HTMLInputElement = document.createElement("input");
+      input.type = "text";
+      input.value = get();
+      input.addEventListener("input", () => {
+        callback(input.value);
+        _update(this.widget.type);
+        saveAllWidgets();
+      });
+
+      label.innerText = long_name;
+      input.name = name;
+      label.htmlFor = input.name;
+
+      root.appendChild(label);
+      root.appendChild(input);
       this.appendChild(root);
     } else if (typeof type == "object") {
       let root: HTMLDivElement = document.createElement("div"),
@@ -342,6 +361,17 @@ function createWidget(type: number, options?: {}): Widget {
       let text = String(widget.options["text"]).replace("\r", "").trim();
       if (!text) text = "Hello, World!";
       widget.innerText = text;
+      widget.configs.register(
+        String,
+        (value: string) => {
+          widget.options["text"] = widget.innerText = value
+            .replace("\r", "")
+            .trim();
+        },
+        "text",
+        "text",
+        "Content"
+      );
       break;
     case WidgetTypes.Greeting:
       let parts: string[] = [];

@@ -34,9 +34,11 @@ widget-generic.widget-3 {
 }
 widget-generic.widget-4,
 widget-generic.widget-7 {
+  white-space: pre;
   color: #0aa;
 }
 widget-generic.widget-5 {
+  white-space: pre;
   padding: 0 10px;
   color: #088;
 }
