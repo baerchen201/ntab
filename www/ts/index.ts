@@ -305,10 +305,32 @@ function createWidget(type: number, options?: {}): Widget {
       break;
     case WidgetTypes.Date:
       dateWidgets.push(widget);
+      widget.configs.register(
+        { de: "DD.MM.YYYY", us: "MM/DD/YYYY" },
+        "format",
+        "format",
+        "format",
+        "Date format"
+      );
       break;
     case WidgetTypes.Ip:
       widget.innerText = "Loading...";
       ipWidgets.push(widget);
+      widget.configs.register(Boolean, "city", "city", "city", "Display city");
+      widget.configs.register(
+        Boolean,
+        "region",
+        "region",
+        "region",
+        "Display region"
+      );
+      widget.configs.register(
+        Boolean,
+        "country",
+        "country",
+        "country",
+        "Display coutry"
+      );
       break;
     case WidgetTypes.DynamicText:
       widget.contentEditable = "true";
