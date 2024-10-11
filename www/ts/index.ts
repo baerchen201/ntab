@@ -58,7 +58,8 @@ class _WidgetConfigs extends HTMLElement {
     callback: string | ((value: any) => void),
     get: string | (() => any),
     name: string,
-    long_name?: string
+    long_name?: string,
+    default_value?: string | number | boolean
   ): {
     root: HTMLDivElement;
     input?: HTMLInputElement;
@@ -87,7 +88,10 @@ class _WidgetConfigs extends HTMLElement {
         checkbox: HTMLInputElement = document.createElement("input"),
         label: HTMLLabelElement = document.createElement("label");
       checkbox.type = "checkbox";
-      checkbox.checked = Boolean(get());
+      let _ = get();
+      if (_ == undefined) _ = Boolean(default_value);
+      checkbox.checked = _;
+      callback(checkbox.checked);
       checkbox.addEventListener("change", () => {
         callback(checkbox.checked);
         _update(this.widget.type);
@@ -113,7 +117,14 @@ class _WidgetConfigs extends HTMLElement {
         input: HTMLInputElement = document.createElement("input"),
         label: HTMLLabelElement = document.createElement("label");
       input.type = "number";
-      input.valueAsNumber = Number(get());
+      let _ = get();
+      if (_ == undefined)
+        _ =
+          default_value == undefined || Number.isNaN(default_value)
+            ? 0
+            : default_value;
+      input.valueAsNumber = _;
+      callback(input.valueAsNumber);
       input.addEventListener("change", () => {
         callback(input.valueAsNumber);
         _update(this.widget.type);
@@ -138,7 +149,10 @@ class _WidgetConfigs extends HTMLElement {
         label: HTMLLabelElement = document.createElement("label"),
         input: HTMLInputElement = document.createElement("input");
       input.type = "text";
-      input.value = get();
+      let _ = get();
+      input.value =
+        _ == undefined ? (default_value == undefined ? "" : default_value) : _;
+      callback(input.value);
       input.addEventListener("input", () => {
         callback(input.value);
         _update(this.widget.type);
@@ -162,7 +176,10 @@ class _WidgetConfigs extends HTMLElement {
       let root: HTMLDivElement = document.createElement("div"),
         label: HTMLLabelElement = document.createElement("label"),
         textarea: HTMLTextAreaElement = document.createElement("textarea");
-      textarea.value = get();
+      let _ = get();
+      textarea.value =
+        _ == undefined ? (default_value == undefined ? "" : default_value) : _;
+      callback(textarea.value);
       textarea.addEventListener("input", () => {
         callback(textarea.value);
         _update(this.widget.type);
@@ -194,7 +211,10 @@ class _WidgetConfigs extends HTMLElement {
         option.label = type[key];
         select.appendChild(option);
       });
-      select.value = get();
+      let _ = get();
+      select.value =
+        _ == undefined ? (default_value == undefined ? "" : default_value) : _;
+      callback(select.value);
       select.addEventListener("change", () => {
         callback(select.value);
         _update(this.widget.type);
@@ -476,7 +496,8 @@ function createWidget(type: number, options?: { [key: string]: any }): Widget {
         "format",
         "format",
         "format",
-        "Clock format"
+        "Clock format",
+        "de"
       );
       widget.configs.registerUniversal();
       break;
@@ -487,27 +508,37 @@ function createWidget(type: number, options?: { [key: string]: any }): Widget {
         "format",
         "format",
         "format",
-        "Date format"
+        "Date format",
+        "de"
       );
       widget.configs.registerUniversal();
       break;
     case WidgetTypes.Ip:
       widget.innerText = "Loading...";
       ipWidgets.push(widget);
-      widget.configs.register(Boolean, "city", "city", "city", "Display city");
+      widget.configs.register(
+        Boolean,
+        "city",
+        "city",
+        "city",
+        "Display city",
+        false
+      );
       widget.configs.register(
         Boolean,
         "region",
         "region",
         "region",
-        "Display region"
+        "Display region",
+        false
       );
       widget.configs.register(
         Boolean,
         "country",
         "country",
         "country",
-        "Display coutry"
+        "Display coutry",
+        false
       );
       widget.configs.registerUniversal();
       break;
@@ -531,7 +562,8 @@ function createWidget(type: number, options?: { [key: string]: any }): Widget {
         },
         "text",
         "text",
-        "Content"
+        "Content",
+        "Hello, World!"
       );
       widget.configs.registerUniversal();
       break;
@@ -602,7 +634,8 @@ function createWidget(type: number, options?: { [key: string]: any }): Widget {
           return Number(widget.style.fontSize.replace("px", ""));
         },
         "height",
-        "Height (Size)"
+        "Height (Size)",
+        0
       );
       height_registry["input"]!.min = "0";
       height_registry["input"]!.max = "500";
