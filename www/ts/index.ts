@@ -414,7 +414,19 @@ function createWidget(type: number, options?: {}): Widget {
       }
       if (widget.options["name"])
         parts.push(String(widget.options["name"]).trim());
+      else widget.options["name"] = "";
       widget.innerText = parts.join(", ");
+      widget.configs.register(
+        String,
+        (value: string) => {
+          if (value) parts[1] = value;
+          else parts = [parts[0]];
+          widget.innerText = parts.join(", ");
+        },
+        "name",
+        "name",
+        "Your name"
+      );
       break;
     case WidgetTypes.Space:
       widget.innerText = "\n";
