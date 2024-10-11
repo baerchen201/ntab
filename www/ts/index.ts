@@ -762,7 +762,7 @@ window.addEventListener("load", () => {
     addwidget.selectedIndex = 0;
   });
   addwidget.selectedIndex = 0;
-  for (let i = 0; i < Object.keys(WidgetTypes).length / 2; i++) {
+  for (let i = 1; i < Object.keys(WidgetTypes).length / 2; i++) {
     let option = document.createElement("option");
     option.value = WidgetTypes[i];
     option.innerText = WidgetNames[i];
