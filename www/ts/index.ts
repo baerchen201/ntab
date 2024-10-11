@@ -37,7 +37,6 @@ class Widget extends HTMLElement {
     this.classList.add("widget-" + this.type.toString());
     this.options = options;
 
-    //! Placeholder / Test code
     this.innerText = JSON.stringify(this.toJSON());
   }
 
@@ -88,37 +87,49 @@ function _updateDateWidgets() {
 setInterval(_updateDateWidgets, 500);
 
 const ipWidgets: Widget[] = [];
-interface SystemInfo {
-  [key: string]: string | number | boolean | null | any;
+function _updateNetworkWidgets() {
+  fetch("https://www.gogeoip.com/json/?user")
+    .then(async (response) => {
+      let network_info = await response.json();
+      ipWidgets.forEach((widget) => {
+        try {
+          let out: string[] = [network_info["network"]["ip"]];
+          if (widget.options["city"])
+            out.push(network_info["location"]["city"]);
+          if (widget.options["region"])
+            out.push(network_info["location"]["region_name"]);
+          if (widget.options["country"])
+            out.push(network_info["location"]["country"]["name"]);
+          widget.innerText = out.join(", ");
+        } catch {
+          widget.innerText =
+            "An unexpected error occurred while updating the network information";
+        }
+      });
+    })
+    .catch(() => {
+      ipWidgets.forEach((widget) => {
+        widget.innerText = "No network information";
+      });
+    });
 }
-let system_info: SystemInfo;
-function _updateSystemInfo() {
-  fetch("https://www.gogeoip.com/json/?user", {}).then(async (response) => {
-    system_info = await response.json();
-    _updateSystemInfoWidgets();
-  });
-}
-function _updateSystemInfoWidgets() {
-  let empty = false;
-  if (!system_info || !system_info["network"]) empty = true;
-  ipWidgets.forEach((widget) => {
-    if (empty) return (widget.innerText = "No network information");
-    let out: string[] = [system_info["network"]["ip"]];
-    if (widget.options["city"]) out.push(system_info["location"]["city"]);
-    if (widget.options["region"])
-      out.push(system_info["location"]["region_name"]);
-    if (widget.options["country"])
-      out.push(system_info["location"]["country"]["name"]);
-    widget.innerText = out.join(", ");
-  });
-}
-setInterval(_updateSystemInfo, 6e5);
 
-function _updateAll(init: boolean = false) {
-  _updateTimeWidgets();
-  _updateDateWidgets();
-  _updateSystemInfoWidgets();
-  if (init) _updateSystemInfo();
+function _update(widget_type?: WidgetTypes) {
+  switch (widget_type) {
+    case WidgetTypes.Time:
+      _updateTimeWidgets();
+      break;
+    case WidgetTypes.Date:
+      _updateDateWidgets();
+      break;
+    case WidgetTypes.Ip:
+      _updateNetworkWidgets();
+
+    default:
+      _updateTimeWidgets();
+      _updateDateWidgets();
+      break;
+  }
 }
 
 const widgets: Widget[] = [];
@@ -128,7 +139,7 @@ function saveAllWidgets() {
   widgets.forEach((widget) => {
     json_widgets.push(widget.toJSON());
   });
-  _overwriteStoredWidgets(json_widgets);
+  _storeJSONWidgets(json_widgets);
 }
 
 //* Widget creation (add definitions here)
@@ -252,12 +263,26 @@ function createWidget(type: number, options?: {}): Widget {
   // @ts-ignore Works on my machine
   if (widget.options["_css"]) widget.style = widget.options["_css"];
 
+  _displayWidget(widget);
+  _update(widget.type);
+  saveAllWidgets();
+
   return widget;
 }
-function removeWidget(widget?: Widget): void {
-  if (!widget) widget = widgets[widgets.length - 1];
+function removeWidget(widget?: Widget | number): void {
+  if (
+    !widgets.length ||
+    (typeof widget == "number" && widgets.length <= widget)
+  )
+    return console.error("Invalid widget");
+  let index: number;
+  if (widget == undefined)
+    (index = widgets.length - 1), (widget = widgets[index]);
+  else if (typeof widget == "number")
+    (index = widget), (widget = widgets[index]);
+  else index = widgets.indexOf(widget);
   widget.remove();
-  widgets.splice(widgets.indexOf(widget), 1);
+  widgets.splice(index, 1);
   switch (widget.type) {
     case WidgetTypes.Time:
       timeWidgets.splice(timeWidgets.indexOf(widget), 1);
@@ -281,58 +306,23 @@ function removeWidget(widget?: Widget): void {
  * If the memory is corrupted, ask user if they want to reset it.
  * @returns The widgets from memory, null if memory is corrupted and the user declines the reset
  */
-function getStoredWidgets(): JSONWidget[] | null {
+function _getStoredWidgets(): JSONWidget[] {
   let json: string | null = localStorage.getItem("widgets");
-  if (!json) _overwriteStoredWidgets([]);
+  if (!json) _storeJSONWidgets([]);
   try {
     return JSON.parse(json == null ? "[]" : json);
   } catch (e) {
-    return window.confirm(
-      "An error occurred while reading the saved widgets list.\nWould you like to reset it?\n" +
-        String(e)
-    )
-      ? _overwriteStoredWidgets([])
-      : null;
+    return _storeJSONWidgets([]); // TODO: Add warning
   }
 }
 
-/**
- * Overwrite the currently stored list of widgets
- * @param widgets List of widgets to save
- * @returns `<widgets>` parameter
- */
-function _overwriteStoredWidgets(widgets: JSONWidget[]): JSONWidget[] {
+function _storeJSONWidgets(widgets: JSONWidget[]): JSONWidget[] {
   localStorage.setItem("widgets", JSON.stringify(widgets));
   return widgets;
 }
 
-/**
- * Remove widget at id `<id>` from memory
- * @param id The widget id to remove
- * @returns The updated list of widgets
- */
-function removeStoredWidget(id: number): JSONWidget[] {
-  let widgets: JSONWidget[] = getStoredWidgets()!;
-  widgets.splice(id, 1);
-  return _overwriteStoredWidgets(widgets);
-}
-
-/**
- * Save widget to memory at position `<offset>`
- * @param widget The widget object to save
- * @param offset The position at which to insert the widget, default -1 (last)
- * @returns The updated list of widgets
- */
-function insertWidget(widget: JSONWidget, offset?: number): JSONWidget[] {
-  let widgets: JSONWidget[] = getStoredWidgets()!;
-  if (offset == undefined) widgets.push(widget);
-  else widgets.splice(offset, 0, widget);
-  return _overwriteStoredWidgets(widgets);
-}
-
-function displayWidget(widget: Widget, container: HTMLElement) {
-  container.appendChild(widget);
-  console.debug("Widget", widget, "\n Type", widget.type, "\n", widget.options);
+function _displayWidget(widget: Widget) {
+  document.getElementById("widgets")!.appendChild(widget);
 }
 
 /**
@@ -343,7 +333,6 @@ function setBackground(value: string): void {
   localStorage.setItem("background", value);
   document.body.style.background = value;
 }
-
 /**
  * Recalls the background stored in memory
  * @returns The stored CSS background property value
@@ -353,126 +342,25 @@ function getBackground(): string {
   return bg ? bg : "";
 }
 
-/**
- * Applies the CSS background stored in memory to document.body
- */
-function applyStoredBackground() {
-  setBackground(getBackground());
-}
-
-applyStoredBackground(); //? Not sure if I should put this into window.onload, it should be just fine like this, and prevent the flash of white background.
+setBackground(getBackground()); //? Not sure if I should put this into window.onload, it should be just fine like this, and shorten the flash of white background.
 
 window.addEventListener("load", () => {
-  const widget_container = document.getElementById("widgets") as HTMLDivElement;
-
-  let _createWidgetFromUI = (
-    type: WidgetTypes,
-    options?: WidgetOptions
-  ): Widget => {
-    if (!options) options = {};
-    let font_size = (document.getElementById("fontsize") as HTMLInputElement)
-        .valueAsNumber,
-      user_select = (document.getElementById("select") as HTMLInputElement)
-        .checked
-        ? "initial"
-        : null;
-
-    options["_css"] = `${font_size ? `font-size:${font_size}px;` : ""}${
-      user_select ? `user-select:${user_select};` : ""
-    }`;
-    console.debug(options["_css"]);
-
-    // @ts-ignore This works just fine, no need for strict type-checking
-    options["_anchor"] = (
-      document.getElementById("anchor") as HTMLInputElement
-    ).value;
-
-    return createWidget(type, options);
-  };
-  getStoredWidgets()!.forEach((json: JSONWidget) => {
-    displayWidget(Widget.fromJSON(json), widget_container);
-  });
-  _updateAll(true);
-
-  document.getElementById("addtime")!.addEventListener("click", () => {
-    let conf = document.getElementById("addtime-conf") as HTMLSelectElement;
-    let widget = _createWidgetFromUI(WidgetTypes.Time, {
-      format: conf.value,
-    });
-    insertWidget(widget.toJSON());
-    displayWidget(widget, widget_container);
-    _updateTimeWidgets();
-  });
-  document.getElementById("adddate")!.addEventListener("click", () => {
-    let conf = document.getElementById("adddate-conf") as HTMLSelectElement;
-    let widget = _createWidgetFromUI(WidgetTypes.Date, {
-      format: conf.value,
-    });
-    insertWidget(widget.toJSON());
-    displayWidget(widget, widget_container);
-    _updateDateWidgets();
-  });
-  document.getElementById("addip")!.addEventListener("click", () => {
-    let conf = document.getElementById("addip-conf") as HTMLSelectElement;
-    let options = Number(conf.value);
-    let widget = _createWidgetFromUI(WidgetTypes.Ip, {
-      city: options & 0b100,
-      region: options & 0b010,
-      country: options & 0b001,
-    });
-    insertWidget(widget.toJSON());
-    displayWidget(widget, widget_container);
-    _updateSystemInfoWidgets();
-  });
-  let text_input = document.getElementById("text-content") as HTMLInputElement;
-  document.getElementById("addstatic")!.addEventListener("click", () => {
-    let widget = _createWidgetFromUI(WidgetTypes.StaticText, {
-      text: text_input.value,
-    });
-    insertWidget(widget.toJSON());
-    displayWidget(widget, widget_container);
-    _updateSystemInfoWidgets();
-  });
-  document.getElementById("adddynamic")!.addEventListener("click", () => {
-    let widget = _createWidgetFromUI(WidgetTypes.DynamicText, {
-      text: text_input.value,
-    });
-    insertWidget(widget.toJSON());
-    displayWidget(widget, widget_container);
-    _updateSystemInfoWidgets();
-  });
-  document.getElementById("addgreeting")!.addEventListener("click", () => {
-    let widget = _createWidgetFromUI(WidgetTypes.Greeting, {
-      name: (document.getElementById("greeting-name") as HTMLInputElement)
-        .value,
-    });
-    insertWidget(widget.toJSON());
-    displayWidget(widget, widget_container);
-    _updateSystemInfoWidgets();
-  });
-  document.getElementById("addspace")!.addEventListener("click", () => {
-    let widget = _createWidgetFromUI(WidgetTypes.Space);
-    insertWidget(widget.toJSON());
-    displayWidget(widget, widget_container);
-    _updateSystemInfoWidgets();
-  });
-  document.getElementById("remove")!.addEventListener("click", () => {
-    removeWidget();
-  });
-  document.getElementById("clear")!.addEventListener("click", () => {
-    _overwriteStoredWidgets([]);
-    location.reload();
+  _getStoredWidgets()!.forEach((json: JSONWidget) => {
+    Widget.fromJSON(json);
   });
 
-  let background_conf = document.getElementById(
-    "background-conf"
-  ) as HTMLInputElement;
-  background_conf.value = getBackground();
-  background_conf.addEventListener("input", (e: Event) => {
-    setBackground((e.target as HTMLInputElement).value);
+  let addwidget: HTMLSelectElement = document.getElementById(
+    "addwidget"
+  ) as HTMLSelectElement;
+  addwidget.addEventListener("change", () => {
+    // @ts-ignore Just add the values in the HTML correctly
+    createWidget(WidgetTypes[addwidget.value]);
+    addwidget.selectedIndex = 0;
   });
+  addwidget.selectedIndex = 0;
+});
 
-  console.clear();
+function help() {
   console.warn(
     "The console is for advanced users only, only use it if you know what you're doing."
   );
@@ -480,13 +368,13 @@ window.addEventListener("load", () => {
     "You can use the following functions to manipulate the widgets list:"
   );
   console.log(
-    "  newWidget(WidgetTypes.< Type >, [ Options (Object)]): Create new widget of type < Type > with options [ Options ]"
+    "  createWidget(< Type (number, use WidgetTypes) >, [ Options (Object) ]): Create new widget of type < Type > with options [ Options ]"
   );
   console.log(
-    "  removeWidget([ Widget (HTML element) ]): Remove widget [ Widget ] or the widget added last"
+    "  removeWidget([ Widget (HTML element, number (as array index)) ]): Remove widget [ Widget ] or the widget added last"
   );
   console.log(
-    "  exportAllSettings([ Whether to export as string (boolean) ]): Export all settings (including background) as JSON Object or String"
+    "  exportAllSettings([ string (boolean) ]): Export all settings (including background) as JSON Object or String"
   );
   console.log(
     "  importAllSettings(< JSON Value (Object / String) >): Import all settings (including background) from string, that was previously exported using exportAllSettings()"
@@ -495,25 +383,12 @@ window.addEventListener("load", () => {
     "The following functions/values can be used/modified directly, however, please check the code first to understand exactly what they do."
   );
   console.log(
-    "  saveAllWidgets(): Save all manual modifications to widgets (like widget options)"
+    "  widgets (Widget[]): List of all loaded widgets, can be used instead of document.getElementsByTagName\n    You will need to save direct modifications with saveAllWidgets()."
   );
   console.log(
-    "  widgets (Widget[]): List of all loaded widgets, can be used instead of document.getElementsByTagName\n    You will need to save modifications to widgets with saveAllWidgets()."
+    "  saveAllWidgets(): Save all manual modifications to widgets (like widget options)"
   );
   // TODO: Add more functions
-});
-
-function newWidget(
-  type: WidgetTypes,
-  options?: WidgetOptions,
-  container: HTMLElement = document.getElementById("widgets")!,
-  insert_pos?: number
-): Widget {
-  let widget = createWidget(type, options);
-  insertWidget(widget, insert_pos);
-  displayWidget(widget, container);
-  _updateAll();
-  return widget;
 }
 
 interface JSONSettings {
@@ -527,7 +402,7 @@ interface JSONSettings {
  */
 function exportAllSettings(string: boolean = true): JSONSettings | string {
   let json: JSONSettings = {
-    widgets: getStoredWidgets()!,
+    widgets: _getStoredWidgets()!,
     background: getBackground(),
   };
   return string ? JSON.stringify(json) : json;
@@ -538,7 +413,7 @@ function exportAllSettings(string: boolean = true): JSONSettings | string {
  */
 function importAllSettings(json: JSONSettings | string): void {
   if (typeof json == "string") json = JSON.parse(json) as JSONSettings;
-  _overwriteStoredWidgets(json.widgets);
+  _storeJSONWidgets(json.widgets);
   setBackground(json.background);
   location.reload();
 }

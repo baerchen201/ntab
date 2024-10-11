@@ -83,49 +83,12 @@ widget-generic.select {
 #control {
   display: flex;
   position: absolute;
-  bottom: 8px;
-  gap: 10px;
-  user-select: none;
-}
-#control > div {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  justify-content: center;
-}
-#control button,
-#control select,
-#control input,
-#control a {
-  font-size: x-large;
-  padding: 8px;
-}
-#control a {
-  color: #00f;
-  background: #0002;
-  text-align: center;
-}
-
-#control-toggle-wrapper {
-  position: absolute;
-  z-index: 2;
   top: 0;
   left: 0;
-  width: 175px;
-  height: 175px;
-}
-#control-toggle {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  opacity: 0;
-  transition: opacity 200ms;
-  width: 60px;
-  font-size: large;
-}
-#control-toggle-wrapper:hover #control-toggle {
-  opacity: 0.5;
-}
-#control-toggle:hover {
-  opacity: 1 !important;
+  bottom: 0;
+  width: 500px;
+  background: #fff;
+  z-index: 2;
+  flex-direction: column;
+  padding: 8px;
 }

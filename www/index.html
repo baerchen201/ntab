@@ -11,115 +11,18 @@
 
     <div id="widgets"></div>
 
-    <div id="control-toggle-wrapper">
-      <button
-        id="control-toggle"
-        onclick="
-      switch (document.getElementById('control').style.display) {
-        case 'none':
-          document.getElementById('control').style.display = ''
-          this.innerText = 'Hide'
-          break;
-        
-        default:
-          document.getElementById('control').style.display = 'none'
-          this.innerText = 'Show'
-          break;
-      }"
-      >
-        Show
-      </button>
-    </div>
-    <div id="control" style="display: none">
-      <div style="margin-right: 20px" class="_control_flags">
-        <style>
-          ._control_flags * {
-            font-size: 20px !important;
-          }
-        </style>
-        <select id="anchor">
-          <option value="" selected>Anchor: None</option>
-          <option value="topleft">Top-Left</option>
-          <option value="topcenter">Top-Center</option>
-          <option value="topright">Top-Right</option>
-          <option value="left">Left</option>
-          <option value="center">Center</option>
-          <option value="right">Right</option>
-          <option value="bottomleft">Bottom-Left</option>
-          <option value="bottomcenter">Bottom-Center</option>
-          <option value="bottomright">Bottom-Right</option>
-        </select>
-        <input
-          value=""
-          type="number"
-          id="fontsize"
-          max="300"
-          min="0"
-          placeholder="Font Size"
-        />
-        <div
-          style="display: flex; flex-direction: row; justify-content: center"
-        >
-          <label for="select">Text selection</label>
-          <input type="checkbox" id="select" value="" />
-        </div>
-      </div>
-      <div>
-        <select id="addtime-conf">
-          <option value="de" selected>24h (19:20)</option>
-          <option value="us">12h (7:20 PM)</option>
-        </select>
-        <button id="addtime">Add clock</button>
-      </div>
-      <div>
-        <select id="adddate-conf">
-          <option value="de" selected>dd.mm.yyyy</option>
-          <option value="us">mm/dd/yyyy</option>
-        </select>
-        <button id="adddate">Add date display</button>
-      </div>
-      <div>
-        <select id="addip-conf">
-          <option value="0b000" selected>None</option>
-          <option value="0b001">Country</option>
-          <option value="0b010">Region</option>
-          <option value="0b011">Region, Country</option>
-          <option value="0b100">City</option>
-          <option value="0b101">City, Country</option>
-          <option value="0b110">City, Region</option>
-          <option value="0b111">City, Region, Country</option>
-        </select>
-        <button id="addip">Add IP info</button>
-      </div>
-      <div>
-        <!-- TODO: Replace with textarea once there is a proper control center -->
-        <input type="text" placeholder="Text content" id="text-content" />
-        <div
-          style="width: 100%; display: flex; gap: 8px; justify-content: center"
-        >
-          <button id="addstatic">Static text</button>
-          <button id="adddynamic">Dynamic text</button>
-        </div>
-      </div>
-      <div style="width: 250px">
-        <input type="text" placeholder="Name" id="greeting-name" />
-        <button id="addgreeting">Add Greeting</button>
-      </div>
-      <button id="addspace">Add empty space</button>
-      <button id="remove">Remove last widget</button>
-      <button id="clear">Remove all widgets</button>
-      <div style="margin-left: 20px">
-        <input
-          type="text"
-          placeholder="Custom background (CSS)"
-          id="background-conf"
-        />
-        <a
-          href="https://developer.mozilla.org/en-US/docs/Web/CSS/background#syntax"
-          target="_blank"
-          >CSS background syntax</a
-        >
-      </div>
+    <div id="control">
+      <select id="addwidget">
+        <option value="" hidden>Add widget</option>
+        <option value="Time">Time</option>
+        <option value="Date">Date</option>
+        <option value="Ip">Ip</option>
+        <option value="StaticText">Text</option>
+        <option value="DynamicText">Editable Text</option>
+        <option value="Space">Empty space</option>
+        <option value="Greeting">Greeting</option>
+        <option value="CSS">Custom CSS</option>
+      </select>
     </div>
   </body>
 </html>
