@@ -21,6 +21,22 @@ interface JSONWidget {
   options: WidgetOptions;
 }
 
+class _WidgetConfigs extends HTMLElement {
+  /** The associated widget */
+  widget: Widget;
+  constructor(widget: Widget) {
+    super();
+    this.widget = widget;
+    document.getElementById("widget-configs")!.appendChild(this);
+
+    let header = document.createElement("h3");
+    header.innerText = WidgetNames[widget.type];
+
+    this.appendChild(header);
+  }
+}
+window.customElements.define("widget-config", _WidgetConfigs);
+
 /**
  * Base Widget class
  */
@@ -29,6 +45,8 @@ class Widget extends HTMLElement {
   type: number;
   /** The widget options */
   options: WidgetOptions = {};
+  /** The HTML Element containing the widget options GUI */
+  configs: _WidgetConfigs;
 
   constructor(type: number, options: WidgetOptions = {}) {
     super();
@@ -36,6 +54,7 @@ class Widget extends HTMLElement {
     this.type = type;
     this.classList.add("widget-" + this.type.toString());
     this.options = options;
+    this.configs = new _WidgetConfigs(this);
 
     this.innerText = JSON.stringify(this.toJSON());
   }
@@ -60,6 +79,17 @@ enum WidgetTypes {
   Space,
   Greeting,
   CSS,
+}
+enum WidgetNames {
+  Generic,
+  Time,
+  Date,
+  Ip,
+  "Static Text",
+  "Editable Text",
+  "Empty Space",
+  Greeting,
+  "Custom CSS",
 }
 
 //* Dynamic widgets (need updating through scripts)
@@ -358,6 +388,12 @@ window.addEventListener("load", () => {
     addwidget.selectedIndex = 0;
   });
   addwidget.selectedIndex = 0;
+  for (let i = 0; i < Object.keys(WidgetTypes).length / 2; i++) {
+    let option = document.createElement("option");
+    option.value = WidgetTypes[i];
+    option.innerText = WidgetNames[i];
+    addwidget.appendChild(option);
+  }
 });
 
 function help() {
