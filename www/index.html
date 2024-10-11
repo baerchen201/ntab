@@ -11,7 +11,19 @@
 
     <div id="widgets"></div>
 
+    <button
+      id="control-show"
+      onclick="document.getElementById('control').classList.add('show')"
+    >
+      Show
+    </button>
     <div id="control">
+      <button
+        id="control-hide"
+        onclick="document.getElementById('control').classList.remove('show')"
+      >
+        Hide
+      </button>
       <h2>Background</h2>
       <textarea
         id="background-conf"
