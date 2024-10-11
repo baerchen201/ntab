@@ -53,7 +53,8 @@ class _WidgetConfigs extends HTMLElement {
       | BooleanConstructor
       | { [key: string]: string }
       | StringConstructor
-      | typeof HTMLTextAreaElement,
+      | typeof HTMLTextAreaElement
+      | NumberConstructor,
     callback: string | ((value: any) => void),
     get: string | (() => any),
     name: string,
@@ -104,6 +105,32 @@ class _WidgetConfigs extends HTMLElement {
       return {
         root: root,
         checkbox: checkbox,
+        label: label,
+      };
+    }
+    if (type == Number) {
+      let root: HTMLDivElement = document.createElement("div"),
+        input: HTMLInputElement = document.createElement("input"),
+        label: HTMLLabelElement = document.createElement("label");
+      input.type = "number";
+      input.valueAsNumber = Number(get());
+      input.addEventListener("change", () => {
+        callback(input.valueAsNumber);
+        _update(this.widget.type);
+        saveAllWidgets();
+      });
+
+      label.innerText = long_name;
+      input.name = name;
+      label.htmlFor = input.name;
+
+      root.appendChild(label);
+      root.appendChild(input);
+      this.appendChild(root);
+
+      return {
+        root: root,
+        input: input,
         label: label,
       };
     } else if (type == String) {
@@ -562,6 +589,19 @@ function createWidget(type: number, options?: {}): Widget {
       break;
     case WidgetTypes.Space:
       widget.innerText = "\n";
+      let height_registry = widget.configs.register(
+        Number,
+        (value: number) => {
+          widget.style.fontSize = value ? `${value}px` : "";
+        },
+        () => {
+          return Number(widget.style.fontSize.replace("px", ""));
+        },
+        "height",
+        "Height (Size)"
+      );
+      height_registry["input"]!.min = "0";
+      height_registry["input"]!.max = "500";
       break;
     case WidgetTypes.CSS:
       // TODO: Add proper live updating (after adding a proper UI first)
