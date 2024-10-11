@@ -47,12 +47,23 @@ class _WidgetConfigs extends HTMLElement {
   }
 
   register(
-    type: BooleanConstructor | { [key: string]: string } | StringConstructor,
+    type:
+      | BooleanConstructor
+      | { [key: string]: string }
+      | StringConstructor
+      | typeof HTMLTextAreaElement,
     callback: string | ((value: any) => void),
     get: string | (() => any),
     name: string,
     long_name?: string
-  ) {
+  ): {
+    root: HTMLDivElement;
+    input?: HTMLInputElement;
+    checkbox?: HTMLInputElement;
+    select?: HTMLSelectElement;
+    textarea?: HTMLTextAreaElement;
+    label: HTMLLabelElement;
+  } {
     if (typeof callback == "string") {
       let opt_name: string = callback;
       callback = (value: any) => {
@@ -87,6 +98,12 @@ class _WidgetConfigs extends HTMLElement {
       root.appendChild(label);
       root.appendChild(checkbox);
       this.appendChild(root);
+
+      return {
+        root: root,
+        checkbox: checkbox,
+        label: label,
+      };
     } else if (type == String) {
       let root: HTMLDivElement = document.createElement("div"),
         label: HTMLLabelElement = document.createElement("label"),
@@ -106,6 +123,38 @@ class _WidgetConfigs extends HTMLElement {
       root.appendChild(label);
       root.appendChild(input);
       this.appendChild(root);
+
+      return {
+        root: root,
+        input: input,
+        label: label,
+      };
+    } else if (type == HTMLTextAreaElement) {
+      let root: HTMLDivElement = document.createElement("div"),
+        label: HTMLLabelElement = document.createElement("label"),
+        textarea: HTMLTextAreaElement = document.createElement("textarea");
+      textarea.value = get();
+      textarea.addEventListener("input", () => {
+        callback(textarea.value);
+        _update(this.widget.type);
+        saveAllWidgets();
+      });
+
+      label.innerText = long_name;
+      textarea.name = name;
+      label.htmlFor = textarea.name;
+
+      root.classList.add("large");
+
+      root.appendChild(label);
+      root.appendChild(textarea);
+      this.appendChild(root);
+
+      return {
+        root: root,
+        textarea: textarea,
+        label: label,
+      };
     } else if (typeof type == "object") {
       let root: HTMLDivElement = document.createElement("div"),
         label: HTMLLabelElement = document.createElement("label"),
@@ -130,7 +179,15 @@ class _WidgetConfigs extends HTMLElement {
       root.appendChild(label);
       root.appendChild(select);
       this.appendChild(root);
+
+      return {
+        root: root,
+        select: select,
+        label: label,
+      };
     }
+
+    throw new TypeError("Invalid option type");
   }
 }
 window.customElements.define("widget-config", _WidgetConfigs);
@@ -435,7 +492,17 @@ function createWidget(type: number, options?: {}): Widget {
       // TODO: Add proper live updating (after adding a proper UI first)
       let style_element = document.createElement("style");
       widget.appendChild(style_element);
+      if (!widget.options["value"]) widget.options["value"] = "";
       style_element.innerHTML = String(widget.options["value"]);
+      widget.configs.register(
+        HTMLTextAreaElement,
+        (value: string) => {
+          widget.options["value"] = style_element.innerHTML = String(value);
+        },
+        "value",
+        "value",
+        "CSS Code"
+      )["textarea"]!.style.height = "300px";
       break;
 
     default:
