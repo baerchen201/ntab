@@ -626,11 +626,10 @@ function createWidget(type: number, options?: { [key: string]: any }): Widget {
       let height_registry = widget.configs.register(
         Number,
         (value: number) => {
+          widget.options["height"] = value;
           widget.style.fontSize = value ? `${value}px` : "";
         },
-        () => {
-          return Number(widget.style.fontSize.replace("px", ""));
-        },
+        "height",
         "height",
         "Height (Size)",
         0
