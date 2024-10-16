@@ -553,16 +553,17 @@ function createWidget(type: number, options?: { [key: string]: any }): Widget {
       if (!text || !widget.options["text"])
         widget.options["text"] = text = "Hello, World!";
       widget.innerText = text;
-      widget.configs.register(
-        HTMLTextAreaElement,
-        (value: string) => {
-          widget.options["text"] = widget.innerText = value.trim();
-        },
-        "text",
-        "text",
-        "Content",
-        "Hello, World!"
-      );
+      if (type == WidgetTypes.StaticText)
+        widget.configs.register(
+          HTMLTextAreaElement,
+          (value: string) => {
+            widget.options["text"] = widget.innerText = value.trim();
+          },
+          "text",
+          "text",
+          "Content",
+          "Hello, World!"
+        );
       widget.configs.registerUniversal();
       break;
     case WidgetTypes.Greeting:
