@@ -553,16 +553,17 @@ function createWidget(type: number, options?: { [key: string]: any }): Widget {
       if (!text || !widget.options["text"])
         widget.options["text"] = text = "Hello, World!";
       widget.innerText = text;
-      widget.configs.register(
-        HTMLTextAreaElement,
-        (value: string) => {
-          widget.options["text"] = widget.innerText = value.trim();
-        },
-        "text",
-        "text",
-        "Content",
-        "Hello, World!"
-      );
+      if (type == WidgetTypes.StaticText)
+        widget.configs.register(
+          HTMLTextAreaElement,
+          (value: string) => {
+            widget.options["text"] = widget.innerText = value.trim();
+          },
+          "text",
+          "text",
+          "Content",
+          "Hello, World!"
+        );
       widget.configs.registerUniversal();
       break;
     case WidgetTypes.Greeting:
@@ -614,6 +615,7 @@ function createWidget(type: number, options?: { [key: string]: any }): Widget {
           if (value) parts[1] = value;
           else parts = [parts[0]];
           widget.innerText = parts.join(", ");
+          widget.options["name"] = value;
         },
         "name",
         "name",
@@ -626,11 +628,10 @@ function createWidget(type: number, options?: { [key: string]: any }): Widget {
       let height_registry = widget.configs.register(
         Number,
         (value: number) => {
+          widget.options["height"] = value;
           widget.style.fontSize = value ? `${value}px` : "";
         },
-        () => {
-          return Number(widget.style.fontSize.replace("px", ""));
-        },
+        "height",
         "height",
         "Height (Size)",
         0
