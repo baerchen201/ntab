@@ -614,6 +614,7 @@ function createWidget(type: number, options?: { [key: string]: any }): Widget {
           if (value) parts[1] = value;
           else parts = [parts[0]];
           widget.innerText = parts.join(", ");
+          widget.options["name"] = value;
         },
         "name",
         "name",
