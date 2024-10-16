@@ -810,12 +810,17 @@ window.addEventListener("load", () => {
     addwidget.appendChild(option);
   }
 
-  let background_conf: HTMLTextAreaElement = document.getElementById(
-    "background-conf"
-  ) as HTMLTextAreaElement;
+  let background_mode: HTMLSelectElement = document.getElementById(
+      "background-mode"
+    ) as HTMLSelectElement,
+    background_conf: HTMLTextAreaElement = document.getElementById(
+      "background-conf"
+    ) as HTMLTextAreaElement;
   background_conf.value = getBackground();
   background_conf.addEventListener("input", () => {
-    setBackground(background_conf.value);
+    // Basic placeholder text
+    // TODO: Replace with proper onchange events and add invalid-value handling (just in case)
+    if (background_mode.value == "css") setBackground(background_conf.value);
   });
 
   if (sessionStorage.getItem("control"))
