@@ -395,31 +395,55 @@ setInterval(_updateDateWidgets, 500);
 
 const ipWidgets: Widget[] = [];
 function _updateNetworkWidgets() {
-  fetch("https://www.gogeoip.com/json/?user")
-    .then(async (response) => {
-      let network_info = await response.json();
-      ipWidgets.forEach((widget) => {
-        try {
-          let out: string[] = [network_info["network"]["ip"]];
-          if (widget.options["city"])
-            out.push(network_info["location"]["city"]);
-          if (widget.options["region"])
-            out.push(network_info["location"]["region_name"]);
-          if (widget.options["country"])
-            out.push(network_info["location"]["country"]["name"]);
-          widget.innerText = out.join(", ");
-        } catch {
-          widget.innerText =
-            "An unexpected error occurred while updating the network information";
-        }
-      });
-    })
-    .catch(() => {
-      ipWidgets.forEach((widget) => {
-        widget.innerText = "No network information";
-      });
-    });
+  ipWidgets.forEach((widget) => {
+    try {
+      let out: (string | null)[] = [
+        sessionStorage.getItem("net_ip") ?? "No network information",
+      ];
+      if (widget.options["city"]) out.push(sessionStorage.getItem("net_city"));
+      if (widget.options["region"])
+        out.push(sessionStorage.getItem("net_region"));
+      if (widget.options["country"])
+        out.push(sessionStorage.getItem("net_country"));
+      widget.innerText = out.filter((e) => Boolean(e)).join(", ");
+    } catch {
+      widget.innerText =
+        "An unexpected error occurred while updating the network information";
+    }
+  });
 }
+
+if (
+  !["net_ip", "net_city", "net_region", "net_country"].every((e) =>
+    Boolean(sessionStorage.getItem(e))
+  )
+)
+  fetch("https://www.gogeoip.com/json/?user").then(async (response) => {
+    let network_info = await response.json();
+
+    if (network_info["network"])
+      sessionStorage.setItem("net_ip", network_info["network"]["ip"]);
+
+    if (network_info["location"]) {
+      if (network_info["location"]["city"])
+        sessionStorage.setItem("net_city", network_info["location"]["city"]);
+      if (network_info["location"]["region_name"])
+        sessionStorage.setItem(
+          "net_region",
+          network_info["location"]["region_name"]
+        );
+      if (
+        network_info["location"]["country"] &&
+        network_info["location"]["country"]["name"]
+      )
+        sessionStorage.setItem(
+          "net_country",
+          network_info["location"]["country"]["name"]
+        );
+    }
+
+    _update(WidgetTypes.Ip);
+  });
 
 function _update(widget_type?: WidgetTypes) {
   switch (widget_type) {
