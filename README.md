@@ -41,7 +41,7 @@ The `help()` function should provide enough information to get you started.
 You can import & export configs using the [developer console](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Tools_and_setup/What_are_browser_developer_tools#the_javascript_console).
 
 Simply enter `importAllSettings(<preset>)`, but replace `<preset>` with the preset that was shared with you.
-It should look something like this: `importAllSettings('{"widgets":[],"background":"no-repeat fixed 0% 0%/cover url(\\"img/bg/internet.jpg\\")"}')`
+It should look something like this: `importAllSettings('{"widgets":[{"type":8,"options":{"value":"body{backdrop-filter:blur(3px) brightness(0.7)}"}}],"background":"no-repeat fixed 0% 0%/cover url(\\"img/bg/internet.jpg\\")"}')`
 
 ### What is the planned release date?
 
