@@ -819,6 +819,12 @@ window.addEventListener("load", () => {
   let background_mode: HTMLSelectElement = document.getElementById(
       "background-mode"
     ) as HTMLSelectElement,
+    background_simple: HTMLDivElement = document.getElementById(
+      "background-simple"
+    ) as HTMLDivElement,
+    background_advanced: HTMLDivElement = document.getElementById(
+      "background-advanced"
+    ) as HTMLDivElement,
     background_conf: HTMLTextAreaElement = document.getElementById(
       "background-conf"
     ) as HTMLTextAreaElement;
@@ -826,6 +832,16 @@ window.addEventListener("load", () => {
     background_mode.className = background_mode.value;
   });
   background_mode.dispatchEvent(new InputEvent("change"));
+
+  let background_type: HTMLDivElement = document.getElementById(
+    "background-type"
+  ) as HTMLDivElement;
+  background_type.addEventListener("change", () => {
+    background_type.className = (
+      background_type.querySelector("select") as HTMLSelectElement
+    ).value;
+  });
+  background_type.dispatchEvent(new InputEvent("change"));
 
   background_conf.value = getBackground();
   background_conf.addEventListener("input", () => {

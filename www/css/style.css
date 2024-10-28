@@ -227,32 +227,35 @@ widget-config textarea {
   resize: vertical;
 }
 
+#background-mode:not(.css) ~ #background-conf,
+#background-mode:not(.simple):not(.advanced) ~ #background-simple,
+#background-mode:not(.advanced) ~ #background-advanced,
+#background-type:not(.solid) ~ #background-color,
+#background-type:not(.image) ~ #background-image {
+  display: none;
+}
+
+#background-simple {
+  display: flex;
+  flex-direction: column;
+}
+#background-color > input {
+  padding: 0;
+  border-radius: 0;
+  height: 1.2em;
+  transform: translateY(2px);
+  border: 0;
+  cursor: pointer;
+}
+
 #background-conf {
   font-size: x-large;
   resize: vertical;
   width: 450px;
   height: 200px;
   max-height: 400px;
-  display: none;
-}
-#background-mode.css ~ #background-conf {
-  display: initial;
 }
 #background-conf.error {
   border: 2px solid #f00;
   color: #a00;
-}
-
-#background-simple {
-  display: none;
-}
-#background-mode.simple ~ #background-simple {
-  display: initial;
-}
-
-#background-advanced {
-  display: none;
-}
-#background-mode.advanced ~ #background-advanced {
-  display: initial;
 }

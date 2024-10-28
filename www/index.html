@@ -37,7 +37,20 @@
         placeholder="url(img/bg/fox.jpg)"
         rows="20"
       ></textarea>
-      <div id="background-simple">simepl</div>
+      <div id="background-simple">
+        <div id="background-type">
+          <label for="type">Background type:</label>
+          <select>
+            <option value="solid">Solid Color</option>
+            <option value="image">Image URL</option>
+            <option value="included">Included Image</option>
+          </select>
+        </div>
+        <div id="background-color">
+          <label for="color">Color:</label>
+          <input type="color" name="color" />
+        </div>
+      </div>
       <div id="background-advanced">advanec</div>
 
       <h2>Widgets</h2>
