@@ -773,10 +773,16 @@ function _displayWidget(widget: Widget) {
 /**
  * Stores the background in memory and applies it to document.body
  * @param value The new CSS background property value
+ * @returns If the background css is valid
  */
-function setBackground(value: string): void {
-  localStorage.setItem("background", value);
+function setBackground(value: string): boolean {
+  let test_element: HTMLElement = document.createElement("body");
+  test_element.style.background = value;
   document.body.style.background = value;
+  if (document.body.style.background != test_element.style.background)
+    return false;
+  localStorage.setItem("background", value.trim());
+  return true;
 }
 /**
  * Recalls the background stored in memory
@@ -818,9 +824,10 @@ window.addEventListener("load", () => {
     ) as HTMLTextAreaElement;
   background_conf.value = getBackground();
   background_conf.addEventListener("input", () => {
-    // Basic placeholder text
-    // TODO: Replace with proper onchange events and add invalid-value handling (just in case)
-    if (background_mode.value == "css") setBackground(background_conf.value);
+    if (background_mode.value == "css")
+      if (setBackground(background_conf.value))
+        background_conf.classList.remove("error");
+      else background_conf.classList.add("error");
   });
 
   if (sessionStorage.getItem("control"))

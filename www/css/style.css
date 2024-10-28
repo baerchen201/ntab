@@ -234,3 +234,7 @@ widget-config textarea {
   height: 200px;
   max-height: 400px;
 }
+#background-conf.error {
+  border: 2px solid #f00;
+  color: #a00;
+}
