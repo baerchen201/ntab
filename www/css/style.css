@@ -27,7 +27,7 @@ widget-generic {
 widget-generic::after {
   content: "";
   position: absolute;
-  inset: -5px;
+  inset: 0 -5px;
   pointer-events: none;
   user-select: none;
   opacity: 0;
@@ -68,6 +68,13 @@ widget-generic.widget-5 {
   white-space: pre;
   padding: 0 10px;
   color: #088;
+}
+widget-generic.widget-6::after {
+  inset: 0 -20px;
+}
+widget-generic.widget-6.highlight::after,
+widget-generic.widget-6.highlight-faint::after {
+  opacity: 1;
 }
 widget-generic.widget-8 {
   display: none;
