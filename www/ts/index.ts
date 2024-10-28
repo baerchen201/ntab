@@ -31,6 +31,18 @@ class _WidgetConfigs extends HTMLElement {
     this.widget = widget;
     document.getElementById("widget-configs")!.appendChild(this);
 
+    this.addEventListener("mouseover", () => {
+      this.widget.classList.add("highlight");
+    });
+    this.addEventListener("mouseout", () => {
+      this.widget.classList.remove("highlight", "highlight-red");
+    });
+    setInterval(() => {
+      if (this.contains(document.activeElement))
+        this.widget.classList.add("highlight-faint");
+      else this.widget.classList.remove("highlight-faint");
+    }, 100);
+
     let header = document.createElement("h3");
     header.innerText = WidgetNames[widget.type];
 
@@ -43,6 +55,12 @@ class _WidgetConfigs extends HTMLElement {
     delete_button.classList.add("delete");
     delete_button.addEventListener("click", () => {
       removeWidget(this.widget);
+    });
+    delete_button.addEventListener("mouseover", () => {
+      this.widget.classList.add("highlight-red");
+    });
+    delete_button.addEventListener("mouseout", () => {
+      this.widget.classList.remove("highlight-red");
     });
 
     this.appendChild(delete_button);

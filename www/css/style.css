@@ -21,6 +21,33 @@ widget-generic {
   font-family: Consolas, "Ubuntu Mono", monospace; /*! Placeholder / Test code */
 
   user-select: none;
+  position: relative;
+}
+
+widget-generic::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  z-index: 2;
+  transition: 100ms background ease-in, 100ms opacity ease-in;
+}
+widget-generic.highlight::after,
+widget-generic.highlight-red::after {
+  opacity: 0.25;
+}
+widget-generic.highlight-faint::after {
+  opacity: 0.1;
+  z-index: -1;
+}
+widget-generic.highlight::after,
+widget-generic.highlight-faint::after {
+  background: #2ac;
+}
+widget-generic.highlight-red::after {
+  background: #f00;
 }
 
 widget-generic.widget-1 {
