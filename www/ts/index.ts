@@ -853,6 +853,15 @@ function help() {
   console.log(
     "  importAllSettings(< JSON Value (Object / String) >): Import all settings (including background) from string, that was previously exported using exportAllSettings()"
   );
+  console.info(
+    "You can use the following functions to manipulate the background:"
+  );
+  console.log(
+    "  setBackground(< CSS >): Set the background and store it in memory"
+  );
+  console.log(
+    "  getBackground(): Get the background currently stored in memory"
+  );
   console.warn(
     "The following functions/values can be used/modified directly, however, please check the code first to understand exactly what they do."
   );
