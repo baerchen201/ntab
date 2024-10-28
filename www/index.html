@@ -13,14 +13,14 @@
 
     <button
       id="control-show"
-      onclick="document.getElementById('control').classList.add('show')"
+      onclick="document.getElementById('control').classList.add('show');sessionStorage.setItem('control',true)"
     >
       Show
     </button>
     <div id="control">
       <button
         id="control-hide"
-        onclick="document.getElementById('control').classList.remove('show')"
+        onclick="document.getElementById('control').classList.remove('immediate','show');sessionStorage.removeItem('control')"
       >
         Hide
       </button>

@@ -105,6 +105,9 @@ widget-generic.select {
   transform: none;
   pointer-events: initial;
 }
+#control.immediate {
+  transition: none;
+}
 
 #control-hide,
 #control-show {

@@ -799,6 +799,9 @@ window.addEventListener("load", () => {
   background_conf.addEventListener("input", () => {
     setBackground(background_conf.value);
   });
+
+  if (sessionStorage.getItem("control"))
+    document.getElementById("control")!.classList.add("immediate", "show");
 });
 
 function help() {
