@@ -233,8 +233,26 @@ widget-config textarea {
   width: 450px;
   height: 200px;
   max-height: 400px;
+  display: none;
+}
+#background-mode.css ~ #background-conf {
+  display: initial;
 }
 #background-conf.error {
   border: 2px solid #f00;
   color: #a00;
+}
+
+#background-simple {
+  display: none;
+}
+#background-mode.simple ~ #background-simple {
+  display: initial;
+}
+
+#background-advanced {
+  display: none;
+}
+#background-mode.advanced ~ #background-advanced {
+  display: initial;
 }

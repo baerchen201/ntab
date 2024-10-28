@@ -822,6 +822,11 @@ window.addEventListener("load", () => {
     background_conf: HTMLTextAreaElement = document.getElementById(
       "background-conf"
     ) as HTMLTextAreaElement;
+  background_mode.addEventListener("change", () => {
+    background_mode.className = background_mode.value;
+  });
+  background_mode.dispatchEvent(new InputEvent("change"));
+
   background_conf.value = getBackground();
   background_conf.addEventListener("input", () => {
     if (background_mode.value == "css")
