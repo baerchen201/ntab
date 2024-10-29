@@ -771,12 +771,25 @@ function _displayWidget(widget: Widget) {
 }
 
 /**
- * Stores the background in memory and applies it to document.body
- * @param value The new CSS background property value
+ * Updates a background-related property
+ * @param property The CSS property to update
+ * @param value The new value
+ * @returns If the CSS is valid
  */
-function setBackground(value: string): void {
-  localStorage.setItem("background", value);
-  document.body.style.background = value;
+function updateBackgroundProperty(
+  property: "background" | string,
+  value: string
+): boolean {
+  let test_element: HTMLElement = document.createElement("body");
+  test_element.style.setProperty(property, value);
+  document.body.style.setProperty(property, value);
+  if (
+    document.body.style.getPropertyValue(property) !=
+    test_element.style.getPropertyValue(property)
+  )
+    return false;
+  localStorage.setItem("background", document.body.style.background);
+  return true;
 }
 /**
  * Recalls the background stored in memory
@@ -787,7 +800,7 @@ function getBackground(): string {
   return bg ? bg : "";
 }
 
-setBackground(getBackground()); //? Not sure if I should put this into window.onload, it should be just fine like this, and shorten the flash of white background.
+updateBackgroundProperty("background", getBackground()); //? Not sure if I should put this into window.onload, it should be just fine like this, and shorten the flash of white background.
 
 window.addEventListener("load", () => {
   _getStoredWidgets()!.forEach((json: JSONWidget) => {
@@ -810,12 +823,44 @@ window.addEventListener("load", () => {
     addwidget.appendChild(option);
   }
 
-  let background_conf: HTMLTextAreaElement = document.getElementById(
-    "background-conf"
-  ) as HTMLTextAreaElement;
+  let background_mode: HTMLSelectElement = document.getElementById(
+      "background-mode"
+    ) as HTMLSelectElement,
+    background_simple: HTMLDivElement = document.getElementById(
+      "background-simple"
+    ) as HTMLDivElement,
+    background_advanced: HTMLDivElement = document.getElementById(
+      "background-advanced"
+    ) as HTMLDivElement,
+    background_conf: HTMLTextAreaElement = document.getElementById(
+      "background-conf"
+    ) as HTMLTextAreaElement;
+  background_mode.addEventListener("change", () => {
+    background_mode.className = background_mode.value;
+  });
+  background_mode.dispatchEvent(new InputEvent("change"));
+
+  let background_type: HTMLSelectElement = document
+    .getElementById("background-type")!
+    .querySelector("select") as HTMLSelectElement;
+  background_type.addEventListener("change", () => {
+    background_type.parentElement!.className = background_type.value;
+  });
+  background_type.dispatchEvent(new InputEvent("change"));
+
+  let background_color: HTMLInputElement = document
+    .getElementById("background-color")!
+    .querySelector("input") as HTMLInputElement;
+  background_color.addEventListener("input", () => {
+    updateBackgroundProperty("background", background_color.value);
+  });
+
   background_conf.value = getBackground();
   background_conf.addEventListener("input", () => {
-    setBackground(background_conf.value);
+    if (background_mode.value == "css")
+      if (updateBackgroundProperty("background", background_conf.value))
+        background_conf.classList.remove("error");
+      else background_conf.classList.add("error");
   });
 
   if (sessionStorage.getItem("control"))
@@ -840,6 +885,15 @@ function help() {
   );
   console.log(
     "  importAllSettings(< JSON Value (Object / String) >): Import all settings (including background) from string, that was previously exported using exportAllSettings()"
+  );
+  console.info(
+    "You can use the following functions to manipulate the background:"
+  );
+  console.log(
+    "  updateBackgroundProperty(< Property >, < CSS >): Set the CSS property and store the new background in memory"
+  );
+  console.log(
+    "  getBackground(): Get the background currently stored in memory"
   );
   console.warn(
     "The following functions/values can be used/modified directly, however, please check the code first to understand exactly what they do."
@@ -876,6 +930,6 @@ function exportAllSettings(string: boolean = true): JSONSettings | string {
 function importAllSettings(json: JSONSettings | string): void {
   if (typeof json == "string") json = JSON.parse(json) as JSONSettings;
   _storeJSONWidgets(json.widgets);
-  setBackground(json.background);
+  updateBackgroundProperty("background", json.background);
   location.reload();
 }

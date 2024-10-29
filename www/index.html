@@ -24,12 +24,35 @@
       >
         Hide
       </button>
+
       <h2>Background</h2>
+      <select id="background-mode">
+        <option value="simple" selected>Simple</option>
+        <option value="advanced" selected>Full</option>
+        <option value="css" selected>Custom CSS (advanced)</option>
+        <option value="" hidden disabled>Other</option>
+      </select>
       <textarea
         id="background-conf"
         placeholder="url(img/bg/fox.jpg)"
         rows="20"
       ></textarea>
+      <div id="background-simple">
+        <div id="background-type">
+          <label for="type">Background type:</label>
+          <select>
+            <option value="solid">Solid Color</option>
+            <option value="image">Image URL</option>
+            <option value="included">Included Image</option>
+          </select>
+        </div>
+        <div id="background-color">
+          <label for="color">Color:</label>
+          <input type="color" name="color" />
+        </div>
+      </div>
+      <div id="background-advanced">advanec</div>
+
       <h2>Widgets</h2>
       <select id="addwidget">
         <option value="" hidden>Add widget</option>
